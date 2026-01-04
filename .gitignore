@@ -1,26 +1,42 @@
 # Environment
-                        .env
-                        .env.local
-                        .env.*.local
+.env
+.env.local
+.env.*.local
 
-                        # Dependencies
-                        node_modules/
-                        __pycache__/
-                        *.pyc
-                        .venv/
-                        venv/
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
 
-                        # IDE
-                        .idea/
-                        *.swp
-                        *.swo
+# IDE
+.idea/
+*.swp
+*.swo
 
-                        # Build
-                        dist/
-                        build/
-                        *.egg-info/
+# Build
+dist/
+build/
+*.egg-info/
 
-                        # Data
-                        data/
-                        *.db
-                    
+# Databases
+*.db
+
+# Local tooling
+.mcp.json
+.nvmrc
+.qlty/
+.mypy_cache/
+
+# Claude Code (local settings)
+.claude/
+
+# Generated output (reproducible via Docker)
+output/
+
+# Reference documents (not code)
+*.docx.pdf
+
+# Duplicate data file in root
+/Binary WT HapB3 Data for NMA (12-18-2025).xlsx
