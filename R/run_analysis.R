@@ -1,6 +1,6 @@
 # =============================================================================
 # run_analysis.R
-# Main entry point for DPYD Arm-Based NMA
+# Main entry point for DPYD Arm-Based NMA (Multi-Model)
 # =============================================================================
 
 # Set working directory (for Docker)
@@ -8,9 +8,11 @@ if (file.exists("/analysis/R")) {
   setwd("/analysis")
 }
 
-# Create output directory if needed
-if (!dir.exists("output")) {
-  dir.create("output")
+# Create output directories
+for (dir in c("output", "output/wt_binary", "output/wt_unified")) {
+  if (!dir.exists(dir)) {
+    dir.create(dir, recursive = TRUE)
+  }
 }
 
 # -----------------------------------------------------------------------------
@@ -35,43 +37,41 @@ on.exit({
 
 cat("=============================================================\n")
 cat("DPYD Arm-Based Network Meta-Analysis\n")
-cat("Resolving Sparsity-Driven Inconsistency via AB Parameterization\n")
+cat("Multi-Model Comparison: WT Binary vs WT Unified\n")
 cat("=============================================================\n\n")
 
 cat(sprintf("Analysis started: %s\n", Sys.time()))
 cat(sprintf("Log file: %s\n\n", log_filename))
 
 # -----------------------------------------------------------------------------
-# Step 1: Prepare Data
+# Model 1: WT Binary (WT_Clean and WT_Biased as separate nodes)
 # -----------------------------------------------------------------------------
 
-cat("\n>>> Step 1: Preparing data...\n")
-cat("-----------------------------------------------------------\n")
-source("R/01_prepare_data.R")
+cat("\n")
+cat("###############################################################\n")
+cat("### MODEL 1: WT BINARY                                      ###\n")
+cat("###############################################################\n")
+source("R/model_wt_binary/run.R")
 
 # -----------------------------------------------------------------------------
-# Step 2: Run NMA Model
+# Model 2: WT Unified (WT_Clean and WT_Biased merged into WT)
 # -----------------------------------------------------------------------------
 
-cat("\n>>> Step 2: Running arm-based NMA model...\n")
-cat("-----------------------------------------------------------\n")
-source("R/02_run_nma.R")
+cat("\n")
+cat("###############################################################\n")
+cat("### MODEL 2: WT UNIFIED                                     ###\n")
+cat("###############################################################\n")
+source("R/model_wt_unified/run.R")
 
 # -----------------------------------------------------------------------------
-# Step 3: Extract and Compare Results
+# Compare Models
 # -----------------------------------------------------------------------------
 
-cat("\n>>> Step 3: Extracting results...\n")
-cat("-----------------------------------------------------------\n")
-source("R/03_results.R")
-
-# -----------------------------------------------------------------------------
-# Step 4: Generate Visualizations
-# -----------------------------------------------------------------------------
-
-cat("\n>>> Step 4: Generating visualizations...\n")
-cat("-----------------------------------------------------------\n")
-source("R/04_visualizations.R")
+cat("\n")
+cat("###############################################################\n")
+cat("### MODEL COMPARISON                                        ###\n")
+cat("###############################################################\n")
+source("R/compare_models.R")
 
 # -----------------------------------------------------------------------------
 # Complete
@@ -79,17 +79,19 @@ source("R/04_visualizations.R")
 
 cat("\n")
 cat("=============================================================\n")
-cat("Analysis Complete\n")
+cat("Multi-Model Analysis Complete\n")
 cat("=============================================================\n")
-cat("\nOutput files:\n")
-cat("  - output/nma_data.rds        (prepared data)\n")
-cat("  - output/nma_result.rds      (full model result)\n")
-cat("  - output/results_summary.rds (formatted results)\n")
-cat("\nVisualizations:\n")
-cat("  - output/network_plot.png          (network structure)\n")
-cat("  - output/contrast_plot.png         (ORs vs WT_Clean)\n")
-cat("  - output/absolute_effects_plot.png (toxicity rates)\n")
-cat("  - output/ranking_plot.png          (treatment rankings)\n")
+cat("\nModel 1 (WT Binary) outputs:\n")
+cat("  - output/wt_binary/wt_binary_result.rds\n")
+cat("  - output/wt_binary/wt_binary_publication_summary.csv\n")
+cat("  - output/wt_binary/wt_binary_model_summary.csv\n")
+cat("\nModel 2 (WT Unified) outputs:\n")
+cat("  - output/wt_unified/wt_unified_result.rds\n")
+cat("  - output/wt_unified/wt_unified_publication_summary.csv\n")
+cat("  - output/wt_unified/wt_unified_model_summary.csv\n")
+cat("\nComparison outputs:\n")
+cat("  - output/model_comparison_dic.csv\n")
+cat("  - output/model_comparison_13hetho.csv\n")
 cat("\nConvergence diagnostics:\n")
-cat("  - Check PSRF*.txt files for Gelman-Rubin statistics\n")
-cat("  - Check LOR*.png files for trace plots\n")
+cat("  - Check output/*/wt_*_convergence.rds for PSRF values\n")
+cat("  - Check output/*/ for trace plots\n")

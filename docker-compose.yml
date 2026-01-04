@@ -4,10 +4,11 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: dpyd-nma
-    # Note: Files are copied into image during build (see Dockerfile)
-    # Output is written to /analysis/output inside container
-    # Use 'docker cp dpyd-nma:/analysis/output ./output' to extract results
     working_dir: /analysis
+    # Volume mount for local development (may not work in devcontainers):
+    # volumes:
+    #   - ./output:/analysis/output
+    # After running: docker cp dpyd-nma:/analysis/output ./output
     command: ["Rscript", "R/run_analysis.R"]
 
   # Interactive R session for development/debugging
