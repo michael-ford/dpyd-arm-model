@@ -74,6 +74,12 @@ cat("###############################################################\n")
 source("R/compare_models.R")
 
 # -----------------------------------------------------------------------------
+# Pairwise Probability Analysis
+# -----------------------------------------------------------------------------
+
+source("R/pairwise_analysis.R")
+
+# -----------------------------------------------------------------------------
 # Complete
 # -----------------------------------------------------------------------------
 
@@ -91,7 +97,10 @@ cat("  - output/wt_unified/wt_unified_publication_summary.csv\n")
 cat("  - output/wt_unified/wt_unified_model_summary.csv\n")
 cat("\nComparison outputs:\n")
 cat("  - output/model_comparison_dic.csv\n")
-cat("  - output/model_comparison_13hetho.csv\n")
+cat("  - output/pairwise_probability_results.csv\n")
+cat("\nMCMC samples (for custom analyses):\n")
+cat("  - output/wt_binary/wt_binary_mcmc_samples.rds\n")
+cat("  - output/wt_unified/wt_unified_mcmc_samples.rds\n")
 cat("\nConvergence diagnostics:\n")
 cat("  - Check output/*/wt_*_convergence.rds for PSRF values\n")
 cat("  - Check output/*/ for trace plots\n")

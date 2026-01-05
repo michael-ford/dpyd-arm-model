@@ -26,7 +26,7 @@ get_default_mcmc_config <- function() {
 
 run_nma_model <- function(nma_data, treatment_names, mcmc_config = NULL,
                           model_name = "nma", output_dir = "output",
-                          seed = 12345) {
+                          seed = 12345, save_samples = TRUE) {
 
   if (is.null(mcmc_config)) {
     mcmc_config <- get_default_mcmc_config()
@@ -76,6 +76,7 @@ run_nma_model <- function(nma_data, treatment_names, mcmc_config = NULL,
       trace = c("LOR"),
       dic = TRUE,
       postdens = FALSE,
+      mcmc.samples = save_samples,  # Return raw MCMC samples for pairwise comparisons
 
       higher.better = FALSE,
       digits = 4
@@ -115,6 +116,7 @@ run_nma_model <- function(nma_data, treatment_names, mcmc_config = NULL,
         trace = c("LOR"),
         dic = TRUE,
         postdens = FALSE,
+        mcmc.samples = save_samples,  # Return raw MCMC samples
 
         higher.better = FALSE,
         digits = 4
@@ -283,6 +285,140 @@ save_model_results <- function(result, model_type, convergence_status,
   saveRDS(convergence_status, file.path(output_dir, paste0(model_name, "_convergence.rds")))
   saveRDS(treatment_names, file.path(output_dir, paste0(model_name, "_treatments.rds")))
 
+  # Save MCMC samples separately if they exist
+  if (!is.null(result$mcmc.samples)) {
+    saveRDS(result$mcmc.samples, file.path(output_dir, paste0(model_name, "_mcmc_samples.rds")))
+    cat("Saved:", file.path(output_dir, paste0(model_name, "_mcmc_samples.rds")), "\n")
+  }
+
   cat("\nSaved:", file.path(output_dir, paste0(model_name, "_result.rds")), "\n")
   cat("Saved:", file.path(output_dir, paste0(model_name, "_convergence.rds")), "\n")
+}
+
+# -----------------------------------------------------------------------------
+# Pairwise probability comparison
+# -----------------------------------------------------------------------------
+
+#' Calculate probability that one treatment's OR exceeds another's
+#'
+#' @param mcmc_samples mcmc.list object from nma.ab.bin with mcmc.samples=TRUE
+#' @param trt1 Name of first treatment (e.g., "2846hetho")
+#' @param trt2 Name of second treatment (e.g., "13hetho")
+#' @param reference Reference treatment for OR calculation (e.g., "WT_Clean")
+#' @return List with probability and sample statistics
+calculate_pairwise_probability <- function(mcmc_samples, trt1, trt2, reference = NULL) {
+
+  if (is.null(mcmc_samples)) {
+    stop("No MCMC samples available. Re-run model with mcmc.samples=TRUE")
+  }
+
+  # Combine chains into single matrix
+  samples_matrix <- do.call(rbind, mcmc_samples)
+  param_names <- colnames(samples_matrix)
+
+  cat("\n=== Pairwise Probability Calculation ===\n")
+  cat(sprintf("Comparing: %s vs %s\n", trt1, trt2))
+
+  # Find the LOR columns for each treatment vs reference
+  # pcnetmeta names them like "LOR[trt1,ref]" or "LOR.trt1.ref"
+  find_lor_column <- function(trt, ref, params) {
+    # Try different naming patterns
+    patterns <- c(
+      sprintf("LOR\\[%s,%s\\]", trt, ref),
+      sprintf("LOR\\[%s, %s\\]", trt, ref),
+      sprintf("LOR\\.%s\\.%s", trt, ref),
+      sprintf("LOR_%s_%s", trt, ref)
+    )
+
+    for (pat in patterns) {
+      matches <- grep(pat, params, value = TRUE)
+      if (length(matches) > 0) return(matches[1])
+    }
+
+    # Try reversed order
+    patterns_rev <- c(
+      sprintf("LOR\\[%s,%s\\]", ref, trt),
+      sprintf("LOR\\[%s, %s\\]", ref, trt),
+      sprintf("LOR\\.%s\\.%s", ref, trt),
+      sprintf("LOR_%s_%s", ref, trt)
+    )
+
+    for (pat in patterns_rev) {
+      matches <- grep(pat, params, value = TRUE)
+      if (length(matches) > 0) return(paste0("-", matches[1]))  # Negate
+    }
+
+    return(NULL)
+  }
+
+  # If no reference specified, find direct comparison between trt1 and trt2
+  if (is.null(reference)) {
+    # Try to find direct LOR comparison
+    col1 <- find_lor_column(trt1, trt2, param_names)
+    if (!is.null(col1)) {
+      if (startsWith(col1, "-")) {
+        samples_diff <- -samples_matrix[, substring(col1, 2)]
+      } else {
+        samples_diff <- samples_matrix[, col1]
+      }
+    } else {
+      stop(sprintf("Cannot find LOR comparison between %s and %s", trt1, trt2))
+    }
+  } else {
+    # Find LOR vs reference for each treatment
+    col1 <- find_lor_column(trt1, reference, param_names)
+    col2 <- find_lor_column(trt2, reference, param_names)
+
+    if (is.null(col1) || is.null(col2)) {
+      cat("Available parameters:\n")
+      cat(paste(head(param_names, 30), collapse = "\n"), "\n")
+      stop(sprintf("Cannot find LOR columns for %s or %s vs %s", trt1, trt2, reference))
+    }
+
+    # Extract samples
+    if (startsWith(col1, "-")) {
+      samples1 <- -samples_matrix[, substring(col1, 2)]
+    } else {
+      samples1 <- samples_matrix[, col1]
+    }
+
+    if (startsWith(col2, "-")) {
+      samples2 <- -samples_matrix[, substring(col2, 2)]
+    } else {
+      samples2 <- samples_matrix[, col2]
+    }
+
+    samples_diff <- samples1 - samples2
+  }
+
+  # Calculate probability
+  p_trt1_greater <- mean(samples_diff > 0)
+
+  # Summary statistics
+  or_diff_median <- median(exp(samples_diff))
+  or_diff_ci <- quantile(exp(samples_diff), c(0.025, 0.975))
+
+  cat(sprintf("\nResults:\n"))
+  cat(sprintf("  P(%s OR > %s OR) = %.3f\n", trt1, trt2, p_trt1_greater))
+  cat(sprintf("  P(%s OR < %s OR) = %.3f\n", trt1, trt2, 1 - p_trt1_greater))
+  cat(sprintf("\n  Median OR ratio (%s/%s): %.2f\n", trt1, trt2, or_diff_median))
+  cat(sprintf("  95%% CrI: [%.2f, %.2f]\n", or_diff_ci[1], or_diff_ci[2]))
+
+  # Interpretation
+  cat("\nInterpretation:\n")
+  if (p_trt1_greater > 0.6) {
+    cat(sprintf("  %s likely has higher OR (more toxic) than %s\n", trt1, trt2))
+  } else if (p_trt1_greater < 0.4) {
+    cat(sprintf("  %s likely has lower OR (less toxic) than %s\n", trt1, trt2))
+  } else {
+    cat("  Ranking is essentially a coin flip - no meaningful difference\n")
+  }
+
+  return(list(
+    p_trt1_greater = p_trt1_greater,
+    p_trt2_greater = 1 - p_trt1_greater,
+    or_ratio_median = or_diff_median,
+    or_ratio_ci = or_diff_ci,
+    n_samples = length(samples_diff)
+  ))
 }

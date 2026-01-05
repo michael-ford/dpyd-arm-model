@@ -1,0 +1,7 @@
+"Treatment","OR_vs_Reference_95CrI","Significant","P_Best"
+"WT_Clean","--","--","N/A"
+"WT_Biased","1.2190 (0.6520, 2.3260)","No","N/A"
+"HapB3","2.4130 (1.2790, 4.6900)","Yes","N/A"
+"2846hetho","9.6880 (4.3930, 21.6300)","Yes","N/A"
+"2Ahetho","7.7340 (3.7490, 16.1700)","Yes","N/A"
+"13hetho","7.9150 (2.3930, 30.2000)","Yes","N/A"

@@ -32,8 +32,8 @@ build/
 # Claude Code (local settings)
 .claude/
 
-# Generated output (reproducible via Docker)
-output/
+# Large MCMC sample files (regenerate via Docker)
+*_mcmc_samples.rds
 
 # Reference documents (not code)
 *.docx.pdf
