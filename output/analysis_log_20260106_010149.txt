@@ -3,8 +3,8 @@ DPYD Arm-Based Network Meta-Analysis
 Multi-Model Comparison: WT Binary vs WT Unified
 =============================================================
 
-Analysis started: 2026-01-04 22:58:58.855521
-Log file: output/analysis_log_20260104_225858.txt
+Analysis started: 2026-01-06 01:01:49.717734
+Log file: output/analysis_log_20260106_010149.txt
 
 
 ###############################################################
@@ -117,9 +117,11 @@ PSRF Validation Results:
   Threshold: 1.05
   Status: CONVERGED (all PSRF <= 1.05)
 
-DIC: 92.29 
+D.bar (deviance at posterior mean): 92.29 
 pD (effective parameters): 59.53 
-Dbar (mean deviance): 151.82 
+DIC: 151.82 
+totresdev (posterior mean): 92.29 
+Dres/n_arms ratio: 0.94 (should be ~1 for good fit)
 Saved: output/wt_binary/wt_binary_mcmc_samples.rds 
 
 Saved: output/wt_binary/wt_binary_result.rds 
@@ -220,7 +222,7 @@ Note: Significant = 95% Credible Interval excludes 1.0
       P(Best) = Probability of having lowest toxicity (Rank 1)
 
 Model Diagnostics:
-  DIC: 92.29
+  DIC: 151.82
   pD: 59.53
   Max PSRF: 1.0420 (threshold: 1.05)
   Convergence: YES
@@ -351,9 +353,11 @@ PSRF Validation Results:
   Threshold: 1.05
   Status: CONVERGED (all PSRF <= 1.05)
 
-DIC: 92.04 
+D.bar (deviance at posterior mean): 92.04 
 pD (effective parameters): 59.45 
-Dbar (mean deviance): 151.49 
+DIC: 151.49 
+totresdev (posterior mean): 92.04 
+Dres/n_arms ratio: 0.94 (should be ~1 for good fit)
 Saved: output/wt_unified/wt_unified_mcmc_samples.rds 
 
 Saved: output/wt_unified/wt_unified_result.rds 
@@ -449,7 +453,7 @@ Note: Significant = 95% Credible Interval excludes 1.0
       P(Best) = Probability of having lowest toxicity (Rank 1)
 
 Model Diagnostics:
-  DIC: 92.04
+  DIC: 151.49
   pD: 59.45
   Max PSRF: 1.0285 (threshold: 1.05)
   Convergence: YES
@@ -500,11 +504,11 @@ Loaded models: wt_binary, wt_unified
 =====================================================
 
        Model      DIC       pD Converged Max_PSRF
-1  WT Binary 92.29414 59.53081       Yes 1.042035
-2 WT Unified 92.03973 59.45234       Yes 1.028536
+1  WT Binary 151.8249 59.53081       Yes 1.042035
+2 WT Unified 151.4921 59.45234       Yes 1.028536
 
 Best model by DIC: WT Unified 
-DIC difference: 0.25 
+DIC difference: 0.33 
 Interpretation: Difference < 2 suggests models are essentially equivalent
 
 =====================================================
@@ -579,47 +583,22 @@ Sample structure:
   Iterations per chain: 15000 
   Total samples: 45000 
   LOR parameters: 15 
-  First 10: LOR[1,2], LOR[1,3], LOR[1,4], LOR[1,5], LOR[1,6], LOR[2,3], LOR[2,4], LOR[2,5], LOR[2,6], LOR[3,4] 
 
 
-=== Pairwise Probability Calculation ===
-Comparing: 2846hetho vs 13hetho
-Available parameters:
-AR[1]
-AR[2]
-AR[3]
-AR[4]
-AR[5]
-AR[6]
-LOR[1,2]
-LOR[1,3]
-LOR[1,4]
-LOR[1,5]
-LOR[1,6]
-LOR[2,3]
-LOR[2,4]
-LOR[2,5]
-LOR[2,6]
-LOR[3,4]
-LOR[3,5]
-LOR[3,6]
-LOR[4,5]
-LOR[4,6]
-LOR[5,6]
-OR[1,2]
-OR[1,3]
-OR[1,4]
-OR[1,5]
-OR[1,6]
-OR[2,1]
-OR[2,3]
-OR[2,4]
-OR[2,5] 
-Error in binary model analysis: Cannot find LOR columns for 2846hetho or 13hetho vs WT_Clean 
+=== Pairwise Probability: 2846hetho vs 13hetho ===
+Reference: WT_Clean (index 1)
+Treatment indices: 2846hetho=4, 13hetho=6
+Using columns: LOR[1,4], LOR[1,6]
 
-=== Pairwise Probability Calculation ===
-Comparing: 2846hetho vs 13hetho
-Direct comparison also failed: Cannot find LOR comparison between 2846hetho and 13hetho 
+Results:
+  P(2846hetho OR > 13hetho OR) = 0.379
+  P(2846hetho OR < 13hetho OR) = 0.621
+
+  Median OR ratio (2846hetho/13hetho): 0.82
+  95% CrI: [0.24, 3.21]
+
+Interpretation:
+  2846hetho likely has lower OR (less toxic) than 13hetho
 
 === WT Unified Model ===
 Sample structure:
@@ -627,47 +606,22 @@ Sample structure:
   Iterations per chain: 15000 
   Total samples: 45000 
   LOR parameters: 10 
-  First 10: LOR[1,2], LOR[1,3], LOR[1,4], LOR[1,5], LOR[2,3], LOR[2,4], LOR[2,5], LOR[3,4], LOR[3,5], LOR[4,5] 
 
 
-=== Pairwise Probability Calculation ===
-Comparing: 2846hetho vs 13hetho
-Available parameters:
-AR[1]
-AR[2]
-AR[3]
-AR[4]
-AR[5]
-LOR[1,2]
-LOR[1,3]
-LOR[1,4]
-LOR[1,5]
-LOR[2,3]
-LOR[2,4]
-LOR[2,5]
-LOR[3,4]
-LOR[3,5]
-LOR[4,5]
-OR[1,2]
-OR[1,3]
-OR[1,4]
-OR[1,5]
-OR[2,1]
-OR[2,3]
-OR[2,4]
-OR[2,5]
-OR[3,1]
-OR[3,2]
-OR[3,4]
-OR[3,5]
-OR[4,1]
-OR[4,2]
-OR[4,3] 
-Error in unified model analysis: Cannot find LOR columns for 2846hetho or 13hetho vs WT 
+=== Pairwise Probability: 2846hetho vs 13hetho ===
+Reference: WT (index 1)
+Treatment indices: 2846hetho=3, 13hetho=5
+Using columns: LOR[1,3], LOR[1,5]
 
-=== Pairwise Probability Calculation ===
-Comparing: 2846hetho vs 13hetho
-Direct comparison also failed: Cannot find LOR comparison between 2846hetho and 13hetho 
+Results:
+  P(2846hetho OR > 13hetho OR) = 0.382
+  P(2846hetho OR < 13hetho OR) = 0.618
+
+  Median OR ratio (2846hetho/13hetho): 0.82
+  95% CrI: [0.24, 3.21]
+
+Interpretation:
+  2846hetho likely has lower OR (less toxic) than 13hetho
 
 ===============================================================
 PAIRWISE PROBABILITY SUMMARY
@@ -676,7 +630,16 @@ PAIRWISE PROBABILITY SUMMARY
 Question: Is the ranking difference between 2846hetho and 13hetho
           statistically meaningful, or just noise?
 
-No results available. Ensure models were run with mcmc.samples=TRUE
+        Model P_2846_greater P_13_greater OR_ratio_median OR_ratio_CI_lower
+2.5%   binary          0.379        0.621           0.819             0.239
+2.5%1 unified          0.382        0.618           0.824             0.236
+      OR_ratio_CI_upper            Interpretation
+2.5%              3.213 13hetho likely more toxic
+2.5%1             3.206 13hetho likely more toxic
+
+Results saved to:
+  - output/pairwise_probability_results.csv
+  - output/pairwise_probability_full.rds
 
 
 =============================================================

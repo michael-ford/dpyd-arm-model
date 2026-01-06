@@ -15,6 +15,12 @@ venv/
 *.swp
 *.swo
 
+# Dev container (local environment)
+.devcontainer/
+
+# macOS
+.DS_Store
+
 # Build
 dist/
 build/

@@ -140,7 +140,8 @@ run_nma_model <- function(nma_data, treatment_names, mcmc_config = NULL,
   cat("Model type:", model_type, "\n")
 
   # Check convergence and extract DIC
-  convergence_status <- check_convergence(result, output_dir, model_name)
+  n_arms <- nrow(nma_data)
+  convergence_status <- check_convergence(result, output_dir, model_name, n_arms = n_arms)
 
   # Save results
   save_model_results(result, model_type, convergence_status,
@@ -155,10 +156,10 @@ run_nma_model <- function(nma_data, treatment_names, mcmc_config = NULL,
 }
 
 # -----------------------------------------------------------------------------
-# Check convergence via PSRF
+# Check convergence via PSRF and extract model fit statistics
 # -----------------------------------------------------------------------------
 
-check_convergence <- function(result, output_dir, model_name) {
+check_convergence <- function(result, output_dir, model_name, n_arms = NA) {
   convergence_status <- list(
     converged = NA,
     max_psrf = NA,
@@ -167,6 +168,8 @@ check_convergence <- function(result, output_dir, model_name) {
     dic_value = NA,
     pd_value = NA,
     dbar_value = NA,
+    dres_value = NA,      # Posterior mean total residual deviance
+    n_arms = n_arms,      # Number of data points (study arms)
     warning_message = NULL
   )
 
@@ -239,31 +242,49 @@ check_convergence <- function(result, output_dir, model_name) {
     convergence_status$warning_message <- "No PSRF file generated"
   }
 
-  # Extract DIC - pcnetmeta returns numeric vector: c(DIC, pD, Dbar)
+  # Extract DIC - pcnetmeta returns matrix with rownames: D.bar, pD, DIC
+  # D.bar = deviance at posterior mean D(θ̄)
+  # pD = effective number of parameters
+  # DIC = D.bar + pD
   if (!is.null(result$DIC)) {
     tryCatch({
       dic_vec <- result$DIC
-      if (is.numeric(dic_vec) && length(dic_vec) >= 2) {
-        convergence_status$dic_value <- dic_vec[1]
+      if (is.matrix(dic_vec) || is.array(dic_vec)) {
+        # pcnetmeta returns a matrix with rownames
+        convergence_status$dbar_value <- dic_vec["D.bar", 1]  # D(θ̄)
+        convergence_status$pd_value <- dic_vec["pD", 1]
+        convergence_status$dic_value <- dic_vec["DIC", 1]
+      } else if (is.numeric(dic_vec) && length(dic_vec) >= 3) {
+        # Fallback: assume order is D.bar, pD, DIC
+        convergence_status$dbar_value <- dic_vec[1]
         convergence_status$pd_value <- dic_vec[2]
-        if (length(dic_vec) >= 3) {
-          convergence_status$dbar_value <- dic_vec[3]
-        }
-        cat("\nDIC:", round(convergence_status$dic_value, 2), "\n")
-        cat("pD (effective parameters):", round(convergence_status$pd_value, 2), "\n")
-        if (!is.na(convergence_status$dbar_value)) {
-          cat("Dbar (mean deviance):", round(convergence_status$dbar_value, 2), "\n")
-        }
-      } else if (is.list(dic_vec)) {
-        convergence_status$dic_value <- dic_vec$DIC
-        convergence_status$pd_value <- dic_vec$pD
-        cat("\nDIC:", round(convergence_status$dic_value, 2), "\n")
-        cat("pD (effective parameters):", round(convergence_status$pd_value, 2), "\n")
-      } else {
-        cat("\nDIC (raw):", dic_vec, "\n")
+        convergence_status$dic_value <- dic_vec[3]
       }
+      cat("\nD.bar (deviance at posterior mean):", round(convergence_status$dbar_value, 2), "\n")
+      cat("pD (effective parameters):", round(convergence_status$pd_value, 2), "\n")
+      cat("DIC:", round(convergence_status$dic_value, 2), "\n")
     }, error = function(e) {
       cat("\nCould not extract DIC:", e$message, "\n")
+    })
+  }
+
+  # Extract posterior mean of total residual deviance from MCMC samples
+  # totresdev = D̄res = posterior mean of residual deviance (NOT the same as D.bar)
+  # D.bar = D(θ̄) = deviance evaluated at posterior mean of parameters
+  # For absolute fit: totresdev should ≈ number of unconstrained data points (arms)
+  if (!is.null(result$mcmc.samples)) {
+    tryCatch({
+      samples_matrix <- do.call(rbind, result$mcmc.samples)
+      if ("totresdev" %in% colnames(samples_matrix)) {
+        convergence_status$dres_value <- mean(samples_matrix[, "totresdev"])
+        cat("totresdev (posterior mean):", round(convergence_status$dres_value, 2), "\n")
+        if (!is.na(n_arms)) {
+          ratio <- convergence_status$dres_value / n_arms
+          cat(sprintf("Dres/n_arms ratio: %.2f (should be ~1 for good fit)\n", ratio))
+        }
+      }
+    }, error = function(e) {
+      cat("Could not extract totresdev from MCMC samples:", e$message, "\n")
     })
   }
 

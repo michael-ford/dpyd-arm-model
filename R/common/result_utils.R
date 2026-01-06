@@ -219,13 +219,37 @@ generate_publication_summary <- function(result, treatment_names, convergence_st
     write.csv(summary_table, filename, row.names = FALSE)
     cat("\nSaved:", filename, "\n")
 
-    # Save model summary
+    # Save model summary with fit statistics
+    dres_value <- if (!is.null(convergence_status$dres_value) && !is.na(convergence_status$dres_value)) {
+      sprintf("%.2f", convergence_status$dres_value)
+    } else { "NA" }
+
+    n_arms_value <- if (!is.null(convergence_status$n_arms) && !is.na(convergence_status$n_arms)) {
+      as.character(convergence_status$n_arms)
+    } else { "NA" }
+
+    dres_ratio <- if (!is.null(convergence_status$dres_value) && !is.na(convergence_status$dres_value) &&
+                      !is.null(convergence_status$n_arms) && !is.na(convergence_status$n_arms)) {
+      sprintf("%.2f", convergence_status$dres_value / convergence_status$n_arms)
+    } else { "NA" }
+
+    # D.bar = deviance at posterior mean D(θ̄)
+    # totresdev = posterior mean of residual deviance (from MCMC samples)
+    # For absolute fit: totresdev/n_arms should be ≈ 1
+    dbar_value <- if (!is.null(convergence_status$dbar_value) && !is.na(convergence_status$dbar_value)) {
+      sprintf("%.2f", convergence_status$dbar_value)
+    } else { "NA" }
+
     model_summary <- data.frame(
-      Metric = c("Model", "DIC", "pD", "Max_PSRF", "Converged"),
+      Metric = c("Model", "DIC", "pD", "D.bar", "totresdev", "n_arms", "totresdev_per_arm", "Max_PSRF", "Converged"),
       Value = c(
         model_name,
         ifelse(!is.na(convergence_status$dic_value), sprintf("%.2f", convergence_status$dic_value), "NA"),
         ifelse(!is.na(convergence_status$pd_value), sprintf("%.2f", convergence_status$pd_value), "NA"),
+        dbar_value,
+        dres_value,
+        n_arms_value,
+        dres_ratio,
         ifelse(!is.na(convergence_status$max_psrf), sprintf("%.4f", convergence_status$max_psrf), "NA"),
         ifelse(!is.na(convergence_status$converged), as.character(convergence_status$converged), "NA")
       ),
