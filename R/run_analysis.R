@@ -1,6 +1,6 @@
 # =============================================================================
 # run_analysis.R
-# Main entry point for DPYD Arm-Based NMA (Multi-Model)
+# Main entry point for DPYD Arm-Based NMA (WT Unified Model)
 # =============================================================================
 
 # Set working directory (for Docker)
@@ -9,7 +9,7 @@ if (file.exists("/analysis/R")) {
 }
 
 # Create output directories
-for (dir in c("output", "output/wt_binary", "output/wt_unified")) {
+for (dir in c("output", "output/wt_unified")) {
   if (!dir.exists(dir)) {
     dir.create(dir, recursive = TRUE)
   }
@@ -37,41 +37,21 @@ on.exit({
 
 cat("=============================================================\n")
 cat("DPYD Arm-Based Network Meta-Analysis\n")
-cat("Multi-Model Comparison: WT Binary vs WT Unified\n")
+cat("WT Unified Model (het_cor)\n")
 cat("=============================================================\n\n")
 
 cat(sprintf("Analysis started: %s\n", Sys.time()))
 cat(sprintf("Log file: %s\n\n", log_filename))
 
 # -----------------------------------------------------------------------------
-# Model 1: WT Binary (WT_Clean and WT_Biased as separate nodes)
+# WT Unified Model (WT_Clean and WT_Biased merged into WT)
 # -----------------------------------------------------------------------------
 
 cat("\n")
 cat("###############################################################\n")
-cat("### MODEL 1: WT BINARY                                      ###\n")
-cat("###############################################################\n")
-source("R/model_wt_binary/run.R")
-
-# -----------------------------------------------------------------------------
-# Model 2: WT Unified (WT_Clean and WT_Biased merged into WT)
-# -----------------------------------------------------------------------------
-
-cat("\n")
-cat("###############################################################\n")
-cat("### MODEL 2: WT UNIFIED                                     ###\n")
+cat("### WT UNIFIED MODEL                                        ###\n")
 cat("###############################################################\n")
 source("R/model_wt_unified/run.R")
-
-# -----------------------------------------------------------------------------
-# Compare Models
-# -----------------------------------------------------------------------------
-
-cat("\n")
-cat("###############################################################\n")
-cat("### MODEL COMPARISON                                        ###\n")
-cat("###############################################################\n")
-source("R/compare_models.R")
 
 # -----------------------------------------------------------------------------
 # Pairwise Probability Analysis
@@ -85,22 +65,18 @@ source("R/pairwise_analysis.R")
 
 cat("\n")
 cat("=============================================================\n")
-cat("Multi-Model Analysis Complete\n")
+cat("Analysis Complete\n")
 cat("=============================================================\n")
-cat("\nModel 1 (WT Binary) outputs:\n")
-cat("  - output/wt_binary/wt_binary_result.rds\n")
-cat("  - output/wt_binary/wt_binary_publication_summary.csv\n")
-cat("  - output/wt_binary/wt_binary_model_summary.csv\n")
-cat("\nModel 2 (WT Unified) outputs:\n")
+cat("\nWT Unified outputs:\n")
 cat("  - output/wt_unified/wt_unified_result.rds\n")
 cat("  - output/wt_unified/wt_unified_publication_summary.csv\n")
 cat("  - output/wt_unified/wt_unified_model_summary.csv\n")
-cat("\nComparison outputs:\n")
-cat("  - output/model_comparison_dic.csv\n")
+cat("  - output/wt_unified/wt_unified_absolute_risks.csv\n")
+cat("  - output/wt_unified/wt_unified_odds_ratios.csv\n")
+cat("\nPairwise analysis:\n")
 cat("  - output/pairwise_probability_results.csv\n")
 cat("\nMCMC samples (for custom analyses):\n")
-cat("  - output/wt_binary/wt_binary_mcmc_samples.rds\n")
 cat("  - output/wt_unified/wt_unified_mcmc_samples.rds\n")
 cat("\nConvergence diagnostics:\n")
-cat("  - Check output/*/wt_*_convergence.rds for PSRF values\n")
-cat("  - Check output/*/ for trace plots\n")
+cat("  - output/wt_unified/wt_unified_convergence.rds for PSRF values\n")
+cat("  - output/wt_unified/wt_unified_ConvergenceDiagnostic.txt\n")

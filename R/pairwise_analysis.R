@@ -1,6 +1,6 @@
 # =============================================================================
 # R/pairwise_analysis.R
-# Calculate pairwise probabilities from MCMC samples
+# Calculate pairwise probabilities from MCMC samples (WT Unified Model)
 # =============================================================================
 
 cat("\n")
@@ -17,8 +17,6 @@ source("R/common/model_runner.R")
 
 cat("Loading MCMC samples...\n")
 
-# Try both models
-binary_samples_file <- "output/wt_binary/wt_binary_mcmc_samples.rds"
 unified_samples_file <- "output/wt_unified/wt_unified_mcmc_samples.rds"
 
 results <- list()
@@ -100,45 +98,6 @@ calculate_pairwise_by_index <- function(mcmc_samples, idx1, idx2, ref_idx,
 }
 
 # -----------------------------------------------------------------------------
-# WT Binary Model Analysis
-# Treatment order: 1=WT_Clean, 2=WT_Biased, 3=HapB3, 4=2846hetho, 5=2Ahetho, 6=13hetho
-# -----------------------------------------------------------------------------
-
-if (file.exists(binary_samples_file)) {
-  cat("\n=== WT Binary Model ===\n")
-  binary_samples <- readRDS(binary_samples_file)
-
-  # Check structure
-  cat("Sample structure:\n")
-  cat("  Chains:", length(binary_samples), "\n")
-  cat("  Iterations per chain:", nrow(binary_samples[[1]]), "\n")
-  cat("  Total samples:", length(binary_samples) * nrow(binary_samples[[1]]), "\n")
-
-  # List available parameters
-  params <- colnames(binary_samples[[1]])
-  lor_params <- params[grepl("^LOR", params)]
-  cat("  LOR parameters:", length(lor_params), "\n\n")
-
-  # Calculate pairwise probability: P(OR_2846hetho > OR_13hetho)
-  # Indices: 4=2846hetho, 6=13hetho, 1=WT_Clean (reference)
-  tryCatch({
-    results$binary <- calculate_pairwise_by_index(
-      mcmc_samples = binary_samples,
-      idx1 = 4,  # 2846hetho
-      idx2 = 6,  # 13hetho
-      ref_idx = 1,  # WT_Clean
-      trt1_name = "2846hetho",
-      trt2_name = "13hetho",
-      ref_name = "WT_Clean"
-    )
-  }, error = function(e) {
-    cat("Error in binary model analysis:", e$message, "\n")
-  })
-} else {
-  cat("WT Binary samples not found. Run analysis with mcmc.samples=TRUE first.\n")
-}
-
-# -----------------------------------------------------------------------------
 # WT Unified Model Analysis
 # Treatment order: 1=WT, 2=HapB3, 3=2846hetho, 4=2Ahetho, 5=13hetho
 # -----------------------------------------------------------------------------
@@ -156,7 +115,13 @@ if (file.exists(unified_samples_file)) {
   # List available parameters
   params <- colnames(unified_samples[[1]])
   lor_params <- params[grepl("^LOR", params)]
-  cat("  LOR parameters:", length(lor_params), "\n\n")
+  sigma_params <- params[grepl("^Sigma|^sigma|^sd\\.", params)]
+  cat("  LOR parameters:", length(lor_params), "\n")
+  cat("  Sigma/variance parameters:", length(sigma_params), "\n")
+  if (length(sigma_params) > 0) {
+    cat("    ", paste(sigma_params, collapse = ", "), "\n")
+  }
+  cat("\n")
 
   # Calculate pairwise probability: P(OR_2846hetho > OR_13hetho)
   # Indices: 3=2846hetho, 5=13hetho, 1=WT (reference)

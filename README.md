@@ -6,14 +6,17 @@ Bayesian arm-based network meta-analysis for DPYD variant toxicity using the R `
 
 This analysis compares fluoropyrimidine toxicity risk across DPYD genetic variants using an arm-based NMA approach, which handles sparse data and zero-event arms more robustly than traditional contrast-based methods.
 
-## Models
+## Model
 
-Two model variants are implemented:
+The WT Unified model pools all wild-type studies into a single reference node:
 
-| Model | Treatments | Description |
-|-------|------------|-------------|
-| **WT Binary** | 6 | WT_Clean and WT_Biased as separate reference nodes |
-| **WT Unified** | 5 | All wild-type studies pooled into single WT reference |
+| Treatment | Description |
+|-----------|-------------|
+| WT | Wild-type (reference) |
+| HapB3 | c.1236G>A / HapB3 variant |
+| c.2846A>T | c.2846A>T variant |
+| *2A | DPYD*2A variant |
+| *13 | DPYD*13 variant |
 
 ## Quick Start
 
@@ -33,29 +36,23 @@ docker rm dpyd-nma
 
 ## What Runs
 
-The `docker compose run` command executes `R/run_analysis.R`, which runs four steps in sequence:
+The `docker compose run` command executes `R/run_analysis.R`, which runs:
 
-1. **WT Binary Model** (`R/model_wt_binary/run.R`) - Fits NMA with 6 treatments
-2. **WT Unified Model** (`R/model_wt_unified/run.R`) - Fits NMA with 5 treatments
-3. **Model Comparison** (`R/compare_models.R`) - Compares DIC between models
-4. **Pairwise Probability Analysis** (`R/pairwise_analysis.R`) - Calculates P(OR_A > OR_B) from MCMC samples
+1. **WT Unified Model** (`R/model_wt_unified/run.R`) - Fits arm-based NMA with het_cor model
+2. **Pairwise Probability Analysis** (`R/pairwise_analysis.R`) - Calculates P(OR_A > OR_B) from MCMC samples
 
 All outputs are written to `/analysis/output/` inside the container.
 
 ## Output
 
-Results are saved to `output/`:
+Results are saved to `output/wt_unified/`:
 
 ### Model Results
-- `wt_binary/` - WT Binary model (6 treatments)
-  - `wt_binary_publication_summary.csv` - ORs and CrIs formatted for publication
-  - `wt_binary_odds_ratios.csv` - All pairwise ORs
-  - `wt_binary_absolute_risks.csv` - Toxicity probabilities per treatment
-  - `wt_binary_mcmc_samples.rds` - Raw MCMC samples for custom analyses
-- `wt_unified/` - WT Unified model (5 treatments, same structure)
-
-### Model Comparison
-- `model_comparison_dic.csv` - DIC comparison between models
+- `wt_unified_publication_summary.csv` - ORs and CrIs formatted for publication
+- `wt_unified_odds_ratios.csv` - All pairwise ORs
+- `wt_unified_absolute_risks.csv` - Toxicity probabilities per treatment
+- `wt_unified_model_summary.csv` - Model fit statistics (DIC, PSRF, etc.)
+- `wt_unified_mcmc_samples.rds` - Raw MCMC samples for custom analyses
 
 ### Pairwise Probability Analysis
 - `pairwise_probability_results.csv` - P(OR_A > OR_B) for variant comparisons
