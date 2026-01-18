@@ -39,7 +39,9 @@ docker rm dpyd-nma
 The `docker compose run` command executes `R/run_analysis.R`, which runs:
 
 1. **WT Unified Model** (`R/model_wt_unified/run.R`) - Fits arm-based NMA with het_cor model
-2. **Pairwise Probability Analysis** (`R/pairwise_analysis.R`) - Calculates P(OR_A > OR_B) from MCMC samples
+2. **Rank Extraction** (`R/extract_ranks.R`) - Extracts rank probabilities and SUCRA
+3. **Heterogeneity Extraction** (`R/extract_heterogeneity.R`) - Extracts treatment-specific SDs and correlations
+4. **Pairwise Probability Analysis** (`R/pairwise_analysis.R`) - Calculates P(OR_A > OR_B) from MCMC samples
 
 All outputs are written to `/analysis/output/` inside the container.
 
@@ -53,6 +55,15 @@ Results are saved to `output/wt_unified/`:
 - `wt_unified_absolute_risks.csv` - Toxicity probabilities per treatment
 - `wt_unified_model_summary.csv` - Model fit statistics (DIC, PSRF, etc.)
 - `wt_unified_mcmc_samples.rds` - Raw MCMC samples for custom analyses
+
+### Rank Probabilities
+- `wt_unified_rank_probabilities.csv` - P(treatment = rank k) matrix
+- `wt_unified_sucra.csv` - Surface Under Cumulative Ranking curve values
+
+### Heterogeneity Parameters (Table S7)
+- `wt_unified_heterogeneity_params.csv` - Treatment-specific SDs and correlations
+- `wt_unified_heterogeneity_summary.txt` - Formatted summary for manuscript
+- `wt_unified_heterogeneity_mcmc.rds` - MCMC samples for sensitivity analyses
 
 ### Pairwise Probability Analysis
 - `pairwise_probability_results.csv` - P(OR_A > OR_B) for variant comparisons

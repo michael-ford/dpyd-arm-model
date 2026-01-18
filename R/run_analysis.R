@@ -54,6 +54,18 @@ cat("###############################################################\n")
 source("R/model_wt_unified/run.R")
 
 # -----------------------------------------------------------------------------
+# Extract Rank Probabilities and SUCRA
+# -----------------------------------------------------------------------------
+
+source("R/extract_ranks.R")
+
+# -----------------------------------------------------------------------------
+# Extract Heterogeneity Parameters (sigma, R)
+# -----------------------------------------------------------------------------
+
+source("R/extract_heterogeneity.R")
+
+# -----------------------------------------------------------------------------
 # Pairwise Probability Analysis
 # -----------------------------------------------------------------------------
 
@@ -67,16 +79,23 @@ cat("\n")
 cat("=============================================================\n")
 cat("Analysis Complete\n")
 cat("=============================================================\n")
-cat("\nWT Unified outputs:\n")
+cat("\nWT Unified model outputs:\n")
 cat("  - output/wt_unified/wt_unified_result.rds\n")
 cat("  - output/wt_unified/wt_unified_publication_summary.csv\n")
 cat("  - output/wt_unified/wt_unified_model_summary.csv\n")
 cat("  - output/wt_unified/wt_unified_absolute_risks.csv\n")
 cat("  - output/wt_unified/wt_unified_odds_ratios.csv\n")
+cat("\nRank probabilities and SUCRA:\n")
+cat("  - output/wt_unified/wt_unified_rank_probabilities.csv\n")
+cat("  - output/wt_unified/wt_unified_sucra.csv\n")
+cat("\nHeterogeneity parameters (Table S7):\n")
+cat("  - output/wt_unified/wt_unified_heterogeneity_params.csv\n")
+cat("  - output/wt_unified/wt_unified_heterogeneity_summary.txt\n")
+cat("  - output/wt_unified/wt_unified_heterogeneity_mcmc.rds\n")
 cat("\nPairwise analysis:\n")
 cat("  - output/pairwise_probability_results.csv\n")
 cat("\nMCMC samples (for custom analyses):\n")
 cat("  - output/wt_unified/wt_unified_mcmc_samples.rds\n")
 cat("\nConvergence diagnostics:\n")
-cat("  - output/wt_unified/wt_unified_convergence.rds for PSRF values\n")
+cat("  - output/wt_unified/wt_unified_convergence.rds\n")
 cat("  - output/wt_unified/wt_unified_ConvergenceDiagnostic.txt\n")

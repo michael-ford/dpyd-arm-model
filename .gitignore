@@ -41,6 +41,7 @@ build/
 
 # Large MCMC sample files (regenerate via Docker)
 *_mcmc_samples.rds
+*_heterogeneity_mcmc.rds
 
 # Reference documents (not code)
 *.docx.pdf

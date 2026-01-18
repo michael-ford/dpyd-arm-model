@@ -15,6 +15,11 @@ SHEET_NAME_MAP = {
     "wt_unified_odds_ratios.csv": "Odds Ratios",
     "wt_unified_model_summary.csv": "Model Summary",
     "wt_unified_publication_summary.csv": "Publication Summary",
+    # Rank probabilities and SUCRA
+    "wt_unified_rank_probabilities.csv": "Rank Probabilities",
+    "wt_unified_sucra.csv": "SUCRA",
+    # Heterogeneity parameters (Table S7)
+    "wt_unified_heterogeneity_params.csv": "Heterogeneity Params",
     # Pairwise analysis
     "pairwise_probability_results.csv": "Pairwise Probability",
 }

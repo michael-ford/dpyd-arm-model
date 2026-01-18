@@ -1,0 +1,41 @@
+=== DPYD Arm-Based NMA: Heterogeneity Parameters ===
+
+Model: het_cor (heterogeneous variance with correlation)
+Prior: Wishart on precision matrix T (df = ntrt + 1 = 6)
+       Equivalent to Inverse-Wishart on covariance matrix Sigma
+
+=== Treatment-Specific Standard Deviations (sigma) ===
+(On probit scale; represent between-study heterogeneity for each treatment)
+
+sigma[1] (WT): 0.5122 [95% CrI: 0.3973, 0.6663]
+sigma[2] (HapB3): 0.3932 [95% CrI: 0.2578, 0.5939]
+sigma[3] (2846hetho): 0.5803 [95% CrI: 0.3298, 0.9878]
+sigma[4] (2Ahetho): 0.6259 [95% CrI: 0.3740, 1.0102]
+sigma[5] (13hetho): 0.6094 [95% CrI: 0.3163, 1.1650]
+
+=== Correlation Matrix ===
+(Between-study random effect correlations across treatments)
+
+             WT  HapB3 2846hetho 2Ahetho 13hetho
+WT        1.000  0.237     0.452   0.425   0.042
+HapB3     0.237  1.000     0.104   0.029  -0.071
+2846hetho 0.452  0.104     1.000   0.443   0.130
+2Ahetho   0.425  0.029     0.443   1.000   0.208
+13hetho   0.042 -0.071     0.130   0.208   1.000
+
+=== Off-Diagonal Correlations with 95% CrI ===
+WT vs HapB3: 0.237 [-0.328, 0.684]
+WT vs 2846hetho: 0.452 [-0.040, 0.781]
+WT vs 2Ahetho: 0.425 [-0.039, 0.760]
+WT vs 13hetho: 0.042 [-0.632, 0.667]
+HapB3 vs 2846hetho: 0.104 [-0.464, 0.620]
+HapB3 vs 2Ahetho: 0.029 [-0.520, 0.558]
+HapB3 vs 13hetho: -0.071 [-0.645, 0.532]
+2846hetho vs 2Ahetho: 0.443 [-0.201, 0.841]
+2846hetho vs 13hetho: 0.130 [-0.611, 0.769]
+2Ahetho vs 13hetho: 0.208 [-0.573, 0.812]
+
+=== Model Fit ===
+Total residual deviance: 91.89 [70.45, 115.91]
+Number of data points: 98
+Dres/n ratio: 0.94 (should be ~1 for good fit)
