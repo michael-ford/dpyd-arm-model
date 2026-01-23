@@ -1,0 +1,6 @@
+"Variant","N_Studies","N_Patients","Events","Estimated_Risk_Pct","CrI_Lower_Pct","CrI_Upper_Pct"
+"13hetho",10,16,11,71.2,45.4,89.7
+"2846hetho",16,112,87,75.1,62.2,84.9
+"2Ahetho",25,140,103,70.8,58.9,80.7
+"HapB3",16,378,162,42.4,33.5,51.9
+"WT",31,16655,4957,26.8,21.6,33.2

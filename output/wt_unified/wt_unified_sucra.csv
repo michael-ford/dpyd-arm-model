@@ -1,6 +1,6 @@
-"Treatment","SUCRA"
-"WT",99.97
-"HapB3",74.52
-"2846hetho",16.51
-"2Ahetho",30.86
-"13hetho",28.13
+"Treatment","Label","SUCRA","SUCRA_pct"
+"WT","Wild-type",0.9997,99.97
+"HapB3","HapB3",0.74515,74.515
+"2846hetho","c.2846A>T",0.1651,16.51
+"2Ahetho","*2A",0.3086,30.86
+"13hetho","*13",0.2813,28.13
