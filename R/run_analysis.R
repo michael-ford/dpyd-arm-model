@@ -80,6 +80,18 @@ source("R/compare_models.R")
 source("R/pairwise_analysis.R")
 
 # -----------------------------------------------------------------------------
+# Generate Publication Figures
+# -----------------------------------------------------------------------------
+
+source("R/generate_figures.R")
+
+# -----------------------------------------------------------------------------
+# Generate Supplementary Tables
+# -----------------------------------------------------------------------------
+
+source("R/generate_tables.R")
+
+# -----------------------------------------------------------------------------
 # Complete
 # -----------------------------------------------------------------------------
 
@@ -104,3 +116,12 @@ cat("  - output/wt_unified/wt_unified_mcmc_samples.rds\n")
 cat("\nConvergence diagnostics:\n")
 cat("  - Check output/*/wt_*_convergence.rds for PSRF values\n")
 cat("  - Check output/*/ for trace plots\n")
+cat("\nPublication figures:\n")
+cat("  - output/wt_unified/figures/figure2_network.png\n")
+cat("  - output/wt_unified/figures/figure5_forest.png\n")
+cat("  - output/wt_unified/figures/figure6_rankogram.png\n")
+cat("\nSupplementary tables:\n")
+cat("  - output/wt_unified/tables/tableS5_absolute_risks.csv\n")
+cat("  - output/wt_unified/tables/tableS6_diagnostics.csv\n")
+cat("  - output/wt_unified/tables/tableS7_heterogeneity.csv\n")
+cat("  - output/wt_unified/tables/table2_pairwise_or.csv\n")

@@ -48,6 +48,9 @@ RUN R -e "install.packages(c( \
     'rmarkdown' \
 ), repos='https://cloud.r-project.org/', Ncpus=4)"
 
+# Install visualization packages for publication figures
+RUN R -e "install.packages(c('igraph', 'ggraph', 'patchwork', 'scales', 'stringr'), repos='https://cloud.r-project.org/', Ncpus=4)"
+
 # Verify JAGS connection
 RUN R -e "library(rjags); cat('JAGS version:', .Call('get_version', PACKAGE='rjags'), '\n')"
 
