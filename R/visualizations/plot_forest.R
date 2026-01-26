@@ -104,7 +104,7 @@ plot_forest <- function(or_csv_path = "output/wt_unified/wt_unified_odds_ratios.
   cat("\nCreating forest plot...\n")
 
   # Calculate x position for text labels (right side of plot)
-  label_x <- 30
+  label_x <- 25
 
   p <- ggplot(parsed_data, aes(x = or, y = variant, color = variant)) +
     # Vertical reference line at OR = 1 (null effect)
@@ -132,11 +132,11 @@ plot_forest <- function(or_csv_path = "output/wt_unified/wt_unified_odds_ratios.
     # Log scale for x-axis
     scale_x_log10(
       breaks = c(0.5, 1, 2, 5, 10, 20),
-      limits = c(0.5, 35)
+      limits = c(0.5, 50)
     ) +
 
     # Use variant colors from constants
-    scale_color_manual(values = VARIANT_COLORS, guide = "none") +
+    scale_color_manual(values = VARIANT_COLORS, labels = TREATMENT_LABELS, name = "Variant") +
 
     # Labels
     labs(

@@ -20,7 +20,7 @@ VARIANT_COLORS <- c(
   "HapB3"     = "#1976D2",
   "2846hetho" = "#F57C00",
   "2Ahetho"   = "#C62828",
-  "13hetho"   = "#C62828"
+  "13hetho"   = "#8E24AA"
 )
 
 # -----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ TREATMENT_ORDER <- c("WT", "HapB3", "2846hetho", "2Ahetho", "13hetho")
 
 FIG_DIMS <- list(
   network   = c(width = 6, height = 6),
-  forest    = c(width = 8, height = 5),
+  forest    = c(width = 10, height = 5),
   rankogram = c(width = 10, height = 5)
 )
 

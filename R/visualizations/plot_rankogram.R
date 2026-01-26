@@ -203,7 +203,7 @@ plot_rankogram <- function(result_rds_path = "output/wt_unified/wt_unified_resul
       guide = "none"
     ) +
     scale_x_discrete(labels = TREATMENT_LABELS) +
-    scale_y_continuous(limits = c(0, 110), breaks = seq(0, 100, 25)) +
+    scale_y_continuous(limits = c(0, 120), breaks = seq(0, 100, 25)) +
     coord_flip() +
     labs(
       title = "B. SUCRA Values",
