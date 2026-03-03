@@ -1,0 +1,1207 @@
+=============================================================
+DPYD Sensitivity Analysis
+Started: 2026-03-02 17:38:49.382241
+=============================================================
+
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Loading required package: rjags
+Loading required package: coda
+Linked to JAGS 4.3.0
+Loaded modules: basemod,bugs
+
+###############################################################
+### PHASE 1: PRIMARY BASELINE                               ###
+###############################################################
+
+=============================================================
+Scenario: primary (reading existing result)
+=============================================================
+
+  HapB3 OR: 2.0050 (1.2940, 3.1860)
+  HapB3 SUCRA: 74.5%
+  Rank preserved: TRUE
+  DIC: 151.49
+  Max PSRF: 1.0285
+
+###############################################################
+### PHASE 2: NON-FILTERED SCENARIOS                         ###
+###############################################################
+
+=============================================================
+Scenario: hom_eqcor
+Description: Homogeneous equicorrelation model
+=============================================================
+
+  Model: hom_eqcor, Link: probit, Prior: invgamma
+  Prior hyperparameters: a=0.001, b=0.001
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 98 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 98
+   Unobserved stochastic nodes: 38
+   Total graph size: 2101
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0706
+
+=============================================================
+Scenario: logit_link
+Description: Logit link function
+=============================================================
+
+  Model: het_cor, Link: logit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 98 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 98
+   Unobserved stochastic nodes: 37
+   Total graph size: 2185
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0137
+
+=============================================================
+Scenario: prior_invgamma
+Description: Alternative prior (inv-gamma a=0.01)
+=============================================================
+
+  Model: hom_eqcor, Link: probit, Prior: invgamma
+  Prior hyperparameters: a=0.01, b=0.01
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 98 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 98
+   Unobserved stochastic nodes: 38
+   Total graph size: 2101
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0207
+
+=============================================================
+Scenario: het_cor_invgamma
+Description: het_cor with inv-gamma prior (a=0.001)
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invgamma
+  Prior hyperparameters: a=0.001, b=0.001
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 98 arms
+
+  ERROR: specified prior type is wrong.
+
+=============================================================
+Scenario: informative_prior
+Description: Weakly informative prior (inv-gamma a=0.5, b=0.5)
+=============================================================
+
+  Model: hom_eqcor, Link: probit, Prior: invgamma
+  Prior hyperparameters: a=0.5, b=0.5
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 98 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 98
+   Unobserved stochastic nodes: 38
+   Total graph size: 2101
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0100
+
+###############################################################
+### PHASE 3: FILTERED SCENARIOS                             ###
+###############################################################
+
+--- Preparing sparse-filtered data (N <= 2) ---
+  Before filtering: 98 arms
+  After removing arms with N <= 2: 79 arms
+  Dropping 3 WT-only studies after filtering
+  Final data: 28 studies, 76 arms
+  Connectivity: OK
+  Sparse nodes (<2 arms): 13hetho
+
+=============================================================
+Scenario: exclude_sparse_n2
+Description: Exclude arms with N <= 2
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 76 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 76
+   Unobserved stochastic nodes: 34
+   Total graph size: 1709
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.1979
+  PSRF 1.1979 > 1.10 threshold. Escalating to full MCMC...
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 150000 iter, 75000 burn-in, thin=10, 3 chains
+  Data: 76 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 76
+   Unobserved stochastic nodes: 34
+   Total graph size: 1709
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Escalated Max PSRF: 1.1694
+
+--- Preparing sparse-filtered data (N <= 5) ---
+  Before filtering: 98 arms
+  After removing arms with N <= 5: 56 arms
+  Dropping 12 WT-only studies after filtering
+  Final data: 19 studies, 44 arms
+  Connectivity: DISCONNECTED
+
+###############################################################
+### PHASE 4: LEAVE-ONE-OUT ANALYSIS                         ###
+###############################################################
+  Total unique study names in raw data: 31
+  Multi-arm study groups: Rosmarin_2015
+  LOO iterations: 30 (29 single + 1 grouped)
+
+--- LOO: Excluding Amstutz_2009 ---
+
+=============================================================
+Scenario: loo_Amstutz_2009
+Description: LOO: Exclude Amstutz_2009
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 94 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 94
+   Unobserved stochastic nodes: 36
+   Total graph size: 2023
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0379
+
+--- LOO: Excluding Boige_2016_FFCD_2000_05 ---
+
+=============================================================
+Scenario: loo_Boige_2016_FFCD_2000_05
+Description: LOO: Exclude Boige_2016_FFCD_2000_05
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 94 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 94
+   Unobserved stochastic nodes: 36
+   Total graph size: 2023
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0411
+
+--- LOO: Excluding Boige_2016_PETACC_8 ---
+
+=============================================================
+Scenario: loo_Boige_2016_PETACC_8
+Description: LOO: Exclude Boige_2016_PETACC_8
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 93 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 93
+   Unobserved stochastic nodes: 36
+   Total graph size: 2003
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0128
+
+--- LOO: Excluding Boisdron_Celle_2007 ---
+
+=============================================================
+Scenario: loo_Boisdron_Celle_2007
+Description: LOO: Exclude Boisdron_Celle_2007
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 95 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 95
+   Unobserved stochastic nodes: 36
+   Total graph size: 2042
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0150
+
+--- LOO: Excluding Botticelli_2017 ---
+
+=============================================================
+Scenario: loo_Botticelli_2017
+Description: LOO: Exclude Botticelli_2017
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 96 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 96
+   Unobserved stochastic nodes: 36
+   Total graph size: 2057
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0429
+
+--- LOO: Excluding Bozina_2021 ---
+
+=============================================================
+Scenario: loo_Bozina_2021
+Description: LOO: Exclude Bozina_2021
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 93 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 93
+   Unobserved stochastic nodes: 36
+   Total graph size: 2003
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0290
+
+--- LOO: Excluding Braun_2009 ---
+
+=============================================================
+Scenario: loo_Braun_2009
+Description: LOO: Exclude Braun_2009
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 96 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 96
+   Unobserved stochastic nodes: 36
+   Total graph size: 2058
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0239
+
+--- LOO: Excluding Cevik_2022 ---
+
+=============================================================
+Scenario: loo_Cevik_2022
+Description: LOO: Exclude Cevik_2022
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 95 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 95
+   Unobserved stochastic nodes: 36
+   Total graph size: 2041
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0207
+
+--- LOO: Excluding Cremolini_2018 ---
+
+=============================================================
+Scenario: loo_Cremolini_2018
+Description: LOO: Exclude Cremolini_2018
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 95 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 95
+   Unobserved stochastic nodes: 36
+   Total graph size: 2040
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0140
+
+--- LOO: Excluding Etienne_Grimaldi_2017 ---
+
+=============================================================
+Scenario: loo_Etienne_Grimaldi_2017
+Description: LOO: Exclude Etienne_Grimaldi_2017
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 94 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 94
+   Unobserved stochastic nodes: 36
+   Total graph size: 2025
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0217
+
+--- LOO: Excluding Falvella_2015 ---
+
+=============================================================
+Scenario: loo_Falvella_2015
+Description: LOO: Exclude Falvella_2015
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 96 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 96
+   Unobserved stochastic nodes: 36
+   Total graph size: 2059
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0165
+
+--- LOO: Excluding Froehlich_2015 ---
+
+=============================================================
+Scenario: loo_Froehlich_2015
+Description: LOO: Exclude Froehlich_2015
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 93 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 93
+   Unobserved stochastic nodes: 36
+   Total graph size: 2004
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0196
+
+--- LOO: Excluding Iachetta_2019 ---
+
+=============================================================
+Scenario: loo_Iachetta_2019
+Description: LOO: Exclude Iachetta_2019
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 95 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 95
+   Unobserved stochastic nodes: 36
+   Total graph size: 2041
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0037
+
+--- LOO: Excluding Ikonnikova_2024 ---
+
+=============================================================
+Scenario: loo_Ikonnikova_2024
+Description: LOO: Exclude Ikonnikova_2024
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 96 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 96
+   Unobserved stochastic nodes: 36
+   Total graph size: 2057
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0093
+
+--- LOO: Excluding Jennings_2013 ---
+
+=============================================================
+Scenario: loo_Jennings_2013
+Description: LOO: Exclude Jennings_2013
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 94 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 94
+   Unobserved stochastic nodes: 36
+   Total graph size: 2023
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0419
+
+--- LOO: Excluding Kleibl_2009 ---
+
+=============================================================
+Scenario: loo_Kleibl_2009
+Description: LOO: Exclude Kleibl_2009
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 95 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 95
+   Unobserved stochastic nodes: 36
+   Total graph size: 2041
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0197
+
+--- LOO: Excluding Largillier_2006 ---
+
+=============================================================
+Scenario: loo_Largillier_2006
+Description: LOO: Exclude Largillier_2006
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 96 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 96
+   Unobserved stochastic nodes: 36
+   Total graph size: 2059
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0692
+
+--- LOO: Excluding Lee_2014 ---
+
+=============================================================
+Scenario: loo_Lee_2014
+Description: LOO: Exclude Lee_2014
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 95 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 95
+   Unobserved stochastic nodes: 36
+   Total graph size: 2039
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0198
+
+--- LOO: Excluding Lee_2016 ---
+
+=============================================================
+Scenario: loo_Lee_2016
+Description: LOO: Exclude Lee_2016
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 96 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 96
+   Unobserved stochastic nodes: 36
+   Total graph size: 2055
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0231
+
+--- LOO: Excluding Loganayagam_2013 ---
+
+=============================================================
+Scenario: loo_Loganayagam_2013
+Description: LOO: Exclude Loganayagam_2013
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 94 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 94
+   Unobserved stochastic nodes: 36
+   Total graph size: 2023
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0190
+
+--- LOO: Excluding Medwid_2023 ---
+
+=============================================================
+Scenario: loo_Medwid_2023
+Description: LOO: Exclude Medwid_2023
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 96 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 96
+   Unobserved stochastic nodes: 36
+   Total graph size: 2058
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0080
+
+--- LOO: Excluding Milano_2016 ---
+
+=============================================================
+Scenario: loo_Milano_2016
+Description: LOO: Exclude Milano_2016
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 95 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 95
+   Unobserved stochastic nodes: 36
+   Total graph size: 2042
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0384
+
+--- LOO: Excluding Morel_2006 ---
+
+=============================================================
+Scenario: loo_Morel_2006
+Description: LOO: Exclude Morel_2006
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 94 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 94
+   Unobserved stochastic nodes: 36
+   Total graph size: 2024
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0159
+
+--- LOO: Excluding Onesti_2017 ---
+
+=============================================================
+Scenario: loo_Onesti_2017
+Description: LOO: Exclude Onesti_2017
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 96 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 96
+   Unobserved stochastic nodes: 36
+   Total graph size: 2059
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0236
+
+--- LOO: Excluding Ragia_2023 ---
+
+=============================================================
+Scenario: loo_Ragia_2023
+Description: LOO: Exclude Ragia_2023
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 95 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 95
+   Unobserved stochastic nodes: 36
+   Total graph size: 2040
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0113
+
+--- LOO: Excluding Salgueiro_2004 ---
+
+=============================================================
+Scenario: loo_Salgueiro_2004
+Description: LOO: Exclude Salgueiro_2004
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 96 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 96
+   Unobserved stochastic nodes: 36
+   Total graph size: 2059
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0148
+
+--- LOO: Excluding Schwab_2008 ---
+
+=============================================================
+Scenario: loo_Schwab_2008
+Description: LOO: Exclude Schwab_2008
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 96 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 96
+   Unobserved stochastic nodes: 36
+   Total graph size: 2057
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0176
+
+--- LOO: Excluding Toffoli_2015 ---
+
+=============================================================
+Scenario: loo_Toffoli_2015
+Description: LOO: Exclude Toffoli_2015
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 95 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 95
+   Unobserved stochastic nodes: 36
+   Total graph size: 2039
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0165
+
+--- LOO: Excluding Wigle_2021 ---
+
+=============================================================
+Scenario: loo_Wigle_2021
+Description: LOO: Exclude Wigle_2021
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 96 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 96
+   Unobserved stochastic nodes: 36
+   Total graph size: 2058
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0809
+
+--- LOO: Excluding Rosmarin_2015 ---
+
+=============================================================
+Scenario: loo_Rosmarin_2015
+Description: LOO: Exclude Rosmarin_2015
+=============================================================
+
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 100000 iter, 50000 burn-in, thin=10, 3 chains
+  Data: 88 arms
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 88
+   Unobserved stochastic nodes: 35
+   Total graph size: 1916
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0313
+
+  LOO complete: 30 iterations run
+
+###############################################################
+### PHASE 5: ASSEMBLY AND OUTPUTS                           ###
+###############################################################
+
+--- Checking for contrast-based model results ---
+  No contrast-based result files found. Skipping Scenario 8.
+
+--- Assembling summary table ---
+  Saved: /analysis/output/sensitivity/sensitivity_summary.csv
+
+=== Sensitivity Summary ===
+  primary                   HapB3 OR: 2.005 (1.294, 3.186)       Conclusion: Reference
+  hom_eqcor                 HapB3 OR: 1.867 (1.338, 2.714)       Conclusion: Consistent
+  logit_link                HapB3 OR: 2.036 (1.388, 3.079)       Conclusion: Consistent
+  prior_invgamma            HapB3 OR: 1.844 (1.338, 2.655)       Conclusion: Consistent
+  het_cor_invgamma          HapB3 OR: N/A                        Conclusion: Model failed to run
+  informative_prior         HapB3 OR: 1.851 (1.313, 2.686)       Conclusion: Consistent
+  exclude_sparse_n2         HapB3 OR: 1.930 (1.249, 3.007)       Conclusion: Non-converged (interpret with caution)
+  exclude_sparse_n5         HapB3 OR: N/A                        Conclusion: Network disconnected: 13hetho
+  loo_Amstutz_2009          HapB3 OR: 1.926 (1.236, 3.053)       Conclusion: Consistent
+  loo_Boige_2016_FFCD_2000_05 HapB3 OR: 2.007 (1.279, 3.189)       Conclusion: Consistent
+  loo_Boige_2016_PETACC_8   HapB3 OR: 2.050 (1.312, 3.298)       Conclusion: Consistent
+  loo_Boisdron_Celle_2007   HapB3 OR: 1.939 (1.265, 3.061)       Conclusion: Consistent
+  loo_Botticelli_2017       HapB3 OR: 1.988 (1.296, 3.135)       Conclusion: Consistent
+  loo_Bozina_2021           HapB3 OR: 2.115 (1.356, 3.375)       Conclusion: Consistent
+  loo_Braun_2009            HapB3 OR: 2.060 (1.323, 3.250)       Conclusion: Consistent
+  loo_Cevik_2022            HapB3 OR: 1.937 (1.264, 3.054)       Conclusion: Consistent
+  loo_Cremolini_2018        HapB3 OR: 2.052 (1.335, 3.239)       Conclusion: Consistent
+  loo_Etienne_Grimaldi_2017 HapB3 OR: 1.942 (1.272, 3.057)       Conclusion: Consistent
+  loo_Falvella_2015         HapB3 OR: 2.054 (1.336, 3.260)       Conclusion: Consistent
+  loo_Froehlich_2015        HapB3 OR: 1.887 (1.217, 3.067)       Conclusion: Consistent
+  loo_Iachetta_2019         HapB3 OR: 2.036 (1.325, 3.254)       Conclusion: Consistent
+  loo_Ikonnikova_2024       HapB3 OR: 2.109 (1.349, 3.439)       Conclusion: Consistent
+  loo_Jennings_2013         HapB3 OR: 2.052 (1.309, 3.323)       Conclusion: Consistent
+  loo_Kleibl_2009           HapB3 OR: 2.082 (1.355, 3.277)       Conclusion: Consistent
+  loo_Largillier_2006       HapB3 OR: 1.955 (1.277, 3.045)       Conclusion: Consistent
+  loo_Lee_2014              HapB3 OR: 2.024 (1.308, 3.206)       Conclusion: Consistent
+  loo_Lee_2016              HapB3 OR: 2.047 (1.299, 3.322)       Conclusion: Consistent
+  loo_Loganayagam_2013      HapB3 OR: 1.988 (1.295, 3.126)       Conclusion: Consistent
+  loo_Medwid_2023           HapB3 OR: 2.066 (1.319, 3.276)       Conclusion: Consistent
+  loo_Milano_2016           HapB3 OR: 1.965 (1.263, 3.169)       Conclusion: Consistent
+  loo_Morel_2006            HapB3 OR: 1.948 (1.290, 3.039)       Conclusion: Consistent
+  loo_Onesti_2017           HapB3 OR: 2.010 (1.310, 3.171)       Conclusion: Consistent
+  loo_Ragia_2023            HapB3 OR: 2.017 (1.291, 3.250)       Conclusion: Consistent
+  loo_Salgueiro_2004        HapB3 OR: 1.983 (1.271, 3.132)       Conclusion: Consistent
+  loo_Schwab_2008           HapB3 OR: 1.978 (1.303, 3.087)       Conclusion: Consistent
+  loo_Toffoli_2015          HapB3 OR: 1.969 (1.277, 3.097)       Conclusion: Consistent
+  loo_Wigle_2021            HapB3 OR: 2.046 (1.289, 3.271)       Conclusion: Consistent
+  loo_Rosmarin_2015         HapB3 OR: 1.909 (1.206, 3.127)       Conclusion: Consistent
+
+  Most influential LOO study: loo_Froehlich_2015 (log-OR shift: 0.0607)
+
+=== Validation Checks ===
+  Primary HapB3 OR: 2.0050 (expected: 2.0050) -- PASS
+  All HapB3 ORs positive: PASS
+  CrI ordering (low < median < high): PASS
+  DIC finite for all converged: PASS
+  SUCRA in 0-100% range: PASS
+
+  Filtered scenario data counts:
+    exclude_sparse_n2: 28 studies, 76 arms
+
+Generating forest plot...
+  Saved: /analysis/output/sensitivity/sensitivity_forest.png
+
+Generating manuscript edit suggestions...
+  Saved: /analysis/docs/manuscript-edits-sensitivity.md
+
+=============================================================
+Sensitivity Analysis Complete
+Finished: 2026-03-02 21:04:17.446128
+=============================================================
+
+Outputs:
+  Summary: /analysis/output/sensitivity/sensitivity_summary.csv
+  Forest plot: /analysis/output/sensitivity/sensitivity_forest.png
+  Log: /analysis/output/sensitivity/sensitivity_log.txt
+  Manuscript edits: /analysis/docs/manuscript-edits-sensitivity.md
+
+Scenario results saved in: output/sensitivity/scenarios/

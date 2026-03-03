@@ -43,6 +43,10 @@ build/
 *_mcmc_samples.rds
 *_heterogeneity_mcmc.rds
 
+# Sensitivity analysis per-scenario artifacts (trace plots, RDS, diagnostics)
+# Keep only the summary CSV, forest plot, and log
+output/sensitivity/scenarios/
+
 # Reference documents (not code)
 *.docx.pdf
 
