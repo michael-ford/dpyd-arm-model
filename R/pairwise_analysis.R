@@ -50,16 +50,17 @@ calculate_pairwise_by_index <- function(mcmc_samples, idx1, idx2, ref_idx,
   cat(sprintf("Using columns: %s, %s\n", col1, col2))
 
   # Extract samples (handle sign based on index ordering)
+  # pcnetmeta convention: LOR[i,j] where i < j = log(OR_i / OR_j)
   if (ref_idx < idx1) {
-    samples1 <- samples_matrix[, col1]  # LOR[ref, trt1] = log(OR_trt1/OR_ref)
+    samples1 <- -samples_matrix[, col1]  # -LOR[ref, trt1] = log(OR_trt1/OR_ref)
   } else {
-    samples1 <- -samples_matrix[, col1]  # Negate if reversed
+    samples1 <- samples_matrix[, col1]   # LOR[trt1, ref] = log(OR_trt1/OR_ref)
   }
 
   if (ref_idx < idx2) {
-    samples2 <- samples_matrix[, col2]
+    samples2 <- -samples_matrix[, col2]  # -LOR[ref, trt2] = log(OR_trt2/OR_ref)
   } else {
-    samples2 <- -samples_matrix[, col2]
+    samples2 <- samples_matrix[, col2]   # LOR[trt2, ref] = log(OR_trt2/OR_ref)
   }
 
   # Difference: LOR_trt1 - LOR_trt2 = log(OR_trt1/OR_trt2)

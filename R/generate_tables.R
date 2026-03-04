@@ -202,94 +202,65 @@ tryCatch({
 })
 
 # -----------------------------------------------------------------------------
-# Table 2: Pairwise OR Matrix
+# Table 2 / Supplement Table S6: Full Pairwise OR Matrix
 # -----------------------------------------------------------------------------
-# Data format in odds_ratios.csv:
-#   Treatment, OR_vs_Reference
-#   WT, "--"
-#   HapB3, "2.0050 (1.2940, 3.1860)"
-#
-# NOTE: This file only contains ORs vs WT (reference).
-# Full pairwise matrix would require posterior samples to calculate.
-# For now, we create a table showing ORs vs WT reference.
+# Computes the full 5x5 pairwise OR matrix directly from MCMC posterior
+# samples (LOR[i,j] columns). Convention: row = reference, col = comparator.
 # -----------------------------------------------------------------------------
 
-cat("\nGenerating Table 2 (Pairwise OR Matrix)...\n")
+cat("\nGenerating Table 2 (Full Pairwise OR Matrix from posterior)...\n")
 
 tryCatch({
-  or_data <- read.csv(file.path(output_dir, "wt_unified_odds_ratios.csv"),
-                      stringsAsFactors = FALSE)
+  # Load MCMC posterior samples for full pairwise computation
+  mcmc_file <- file.path(output_dir, "wt_unified_mcmc_samples.rds")
+  treatment_names <- readRDS(file.path(output_dir, "wt_unified_treatment_names.rds"))
 
-  # Parse the OR_vs_Reference string to extract OR and CrI
-  # Format: "2.0050 (1.2940, 3.1860)" or "--" for reference
-  parse_or <- function(or_str) {
-    if (or_str == "--" || is.na(or_str)) {
-      return(c(OR = 1.0, Lower = NA, Upper = NA))
-    }
-
-    # Extract OR (before parenthesis)
-    or_val <- as.numeric(sub("\\s*\\(.*", "", or_str))
-
-    # Extract CrI bounds from parentheses
-    cri_match <- regmatches(or_str, regexec("\\(([0-9.]+),\\s*([0-9.]+)\\)", or_str))[[1]]
-    lower_val <- as.numeric(cri_match[2])
-    upper_val <- as.numeric(cri_match[3])
-
-    return(c(OR = or_val, Lower = lower_val, Upper = upper_val))
+  if (!file.exists(mcmc_file)) {
+    stop("MCMC samples not found: ", mcmc_file,
+         "\nRun analysis with mcmc.samples=TRUE to generate.")
   }
 
-  # Parse all OR values
-  parsed_ors <- t(sapply(or_data$OR_vs_Reference, parse_or))
-  or_data$OR <- parsed_ors[, "OR"]
-  or_data$OR_Lower <- parsed_ors[, "Lower"]
-  or_data$OR_Upper <- parsed_ors[, "Upper"]
+  samples <- readRDS(mcmc_file)
+  mat <- do.call(rbind, samples)
+  n_trt <- length(treatment_names)
 
-  # Create the pairwise matrix (ORs vs WT reference)
-  # Since we only have ORs vs WT, this will be a column format table
-  treatments <- c("WT", "HapB3", "2846hetho", "2Ahetho", "13hetho")
-  n_trt <- length(treatments)
+  # Build full pairwise OR matrix from posterior LOR samples
+  # pcnetmeta convention: LOR[i,j] where i < j = log(OR of treatment i vs treatment j)
+  # Cell [row, col] = OR of col vs row (row is reference, col is comparator)
+  or_matrix <- matrix("Ref", nrow = n_trt, ncol = n_trt,
+                       dimnames = list(treatment_names, treatment_names))
 
-  # Initialize matrix with em-dash
-  or_matrix <- matrix("---", nrow = n_trt, ncol = n_trt,
-                      dimnames = list(treatments, treatments))
+  for (i in 1:n_trt) {
+    for (j in 1:n_trt) {
+      if (i == j) next
 
-  # Fill diagonal with reference indicator
-  diag(or_matrix) <- "Ref"
+      lo <- min(i, j)
+      hi <- max(i, j)
+      col_name <- sprintf("LOR[%d,%d]", lo, hi)
+      lor_samples <- mat[, col_name]
 
-  # Fill ORs vs WT (first row = WT as row treatment, comparing to column treatments)
-  # Convention: OR in row i, col j = OR of j vs i
-  for (i in 1:nrow(or_data)) {
-    trt <- or_data$Treatment[i]
-    if (trt != "WT" && trt %in% treatments) {
-      or_val <- or_data$OR[i]
-      lower_val <- or_data$OR_Lower[i]
-      upper_val <- or_data$OR_Upper[i]
-
-      if (!is.na(or_val)) {
-        # OR of variant vs WT
-        formatted <- sprintf("%.2f (%.2f-%.2f)", or_val, lower_val, upper_val)
-        or_matrix["WT", trt] <- formatted
-
-        # Reciprocal: OR of WT vs variant
-        recip_or <- 1 / or_val
-        recip_upper <- 1 / lower_val
-        recip_lower <- 1 / upper_val
-        recip_formatted <- sprintf("%.2f (%.2f-%.2f)", recip_or, recip_lower, recip_upper)
-        or_matrix[trt, "WT"] <- recip_formatted
+      # LOR[lo,hi] = log(OR of lo vs hi)
+      # Cell [row=i, col=j] = OR of j vs i (j as comparator, i as reference)
+      # If i < j (i=lo, j=hi): OR j/i = exp(-LOR[i,j])
+      # If i > j (j=lo, i=hi): OR j/i = exp(LOR[j,i])
+      if (i < j) {
+        or_samples <- exp(-lor_samples)
+      } else {
+        or_samples <- exp(lor_samples)
       }
+
+      med <- median(or_samples)
+      ci <- quantile(or_samples, c(0.025, 0.975))
+      or_matrix[i, j] <- sprintf("%.2f (%.2f-%.2f)", med, ci[1], ci[2])
     }
   }
-
-  # NOTE: Pairwise ORs between non-WT variants would require posterior samples
-  # to calculate properly. Mark as needing posterior calculation.
 
   # Save as CSV
   or_df <- as.data.frame(or_matrix)
   or_df <- cbind(Treatment = rownames(or_df), or_df)
   write.csv(or_df, file.path(table_dir, "table2_pairwise_or.csv"), row.names = FALSE)
   cat("  Saved: tables/table2_pairwise_or.csv\n")
-  cat("  NOTE: Only ORs vs WT reference are available from current output files.\n")
-  cat("        Full pairwise ORs between variants require posterior samples.\n")
+  cat("  Full 5x5 pairwise OR matrix computed from", nrow(mat), "posterior samples.\n")
 
 }, error = function(e) {
   cat("  ERROR:", e$message, "\n")
