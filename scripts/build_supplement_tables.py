@@ -583,7 +583,190 @@ def build_s10b():
     (OUT / "Table_S10b_ld_summary.html").write_text(html_page(title, body_html))
 
 
+SUBHEAD_FILL = PatternFill("solid", fgColor="D9E1F2")
+SUBHEAD_FONT = Font(name="Calibri", size=10, bold=True)
+
+
+def build_s2():
+    df = pd.read_csv(SRC / "sensitivity_summary.csv")
+
+    def round_half_up(f, ndigits):
+        # IEEE-754 2.005 reads as slightly below 2.005, so Python's banker's
+        # rounding gives 2.00. The manuscript reports 2.01. Force round-half-up
+        # for positive numbers (all ORs here are positive) so the table matches
+        # the manuscript convention.
+        m = 10 ** ndigits
+        return int(f * m + 0.5) / m if f >= 0 else -int(-f * m + 0.5) / m
+
+    def fmt_or(v):
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return "—"
+        if f != f:
+            return "—"
+        return f"{round_half_up(f, 2):.2f}"
+
+    def fmt_cri(lo, hi):
+        try:
+            lo, hi = float(lo), float(hi)
+        except (TypeError, ValueError):
+            return "—"
+        if lo != lo or hi != hi:
+            return "—"
+        return f"{round_half_up(lo, 2):.2f}–{round_half_up(hi, 2):.2f}"
+
+    def fmt_pct(v):
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return "—"
+        if f != f:
+            return "—"
+        return f"{f:.1f}"
+
+    def fmt_dic(v):
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return "—"
+        if f != f:
+            return "—"
+        return f"{f:.2f}"
+
+    def fmt_psrf(v):
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return "—"
+        if f != f:
+            return "—"
+        return f"{f:.3f}"
+
+    def fmt_int(v):
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return "—"
+        if f != f:
+            return "—"
+        return str(int(f))
+
+    def render_row(r):
+        return [
+            r["description"],
+            fmt_int(r["n_studies"]),
+            fmt_int(r["n_arms"]),
+            fmt_or(r["HapB3_OR"]),
+            fmt_cri(r["HapB3_CrI_low"], r["HapB3_CrI_high"]),
+            fmt_pct(r["HapB3_SUCRA"]),
+            fmt_dic(r["DIC"]),
+            fmt_psrf(r["max_PSRF"]),
+            yn(r["converged"]),
+            str(r["conclusion"]),
+        ]
+
+    primary_rows = df[df["scenario"] == "primary"]
+    alt_rows = df[~df["scenario"].str.startswith("loo_") & (df["scenario"] != "primary")]
+    loo_rows = df[df["scenario"].str.startswith("loo_")].copy()
+    # Sort LOO alphabetically by study label (after stripping "LOO: " prefix)
+    loo_rows = loo_rows.sort_values("scenario")
+
+    headers = [
+        "Scenario", "Studies (n)", "Arms (n)",
+        "HapB3 OR", "95% CrI", "HapB3 SUCRA (%)",
+        "DIC", "Max PSRF", "Converged", "Conclusion",
+    ]
+
+    title = "Table S2. Summary of Sensitivity Analyses (37 Scenarios)"
+    caption = (
+        "Each row reports a model perturbation or leave-one-out (LOO) iteration against the primary "
+        "het_cor probit arm-based NMA. The primary analysis is shown as a reference. Of 37 sensitivity "
+        "scenarios, two were infeasible (heterogeneous correlation with inverse-gamma prior is "
+        "unsupported by pcnetmeta; exclusion of arms with N ≤ 5 disconnects the *13 node). Of the 35 "
+        "feasible scenarios, 34 converged (PSRF ≤ 1.10); the one non-converged scenario (exclusion of "
+        "arms with N ≤ 2) is flagged in the Conclusion column. OR = odds ratio for HapB3 vs wild-type; "
+        "CrI = credible interval; SUCRA = surface under the cumulative ranking curve."
+    )
+    n_cols = len(headers)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Table S2"
+    write_title_block(ws, title, caption, n_cols)
+    for i_, h in enumerate(headers, start=1):
+        ws.cell(row=3, column=i_, value=h)
+    style_header_row(ws, 3, n_cols)
+
+    left_cols_idx = {1, 10}  # Scenario and Conclusion
+
+    def write_section(start_row, label, rows_df):
+        # Write subheader spanning all columns
+        ws.merge_cells(start_row=start_row, end_row=start_row,
+                       start_column=1, end_column=n_cols)
+        cell = ws.cell(row=start_row, column=1, value=label)
+        cell.fill = SUBHEAD_FILL
+        cell.font = SUBHEAD_FONT
+        cell.alignment = LEFT
+        cell.border = BORDER
+        r = start_row + 1
+        for _, row in rows_df.iterrows():
+            rendered = render_row(row)
+            for c, v in enumerate(rendered, start=1):
+                cell = ws.cell(row=r, column=c, value=v)
+                style_body_cell(cell, align="left" if c in left_cols_idx else "center")
+            r += 1
+        return r
+
+    r = 4
+    r = write_section(r, "Primary analysis", primary_rows)
+    r = write_section(r, "Model perturbations", alt_rows)
+    r = write_section(r, "Leave-one-out (LOO)", loo_rows)
+
+    notes = [
+        "Subset sizes vary across scenarios: model perturbations retain all 31 studies and 98 arms; "
+        "LOO drops one study per row; sparse-data exclusions drop arms below the size threshold. "
+        "Infeasible scenarios show '—' in numeric columns.",
+        "Conclusion column: 'Reference' = primary; 'Consistent' = HapB3 OR direction and significance preserved "
+        "(|Δ log-OR| < 0.10 vs primary); 'Network disconnected' = removing the variant node breaks network "
+        "connectivity; 'Model failed to run' = unsupported prior/model combination; 'Non-converged (interpret "
+        "with caution)' = PSRF > 1.10 after escalation to the primary model's full sampling configuration.",
+        "Reduced MCMC sampling (100,000 iterations, 50,000 burn-in, 3 chains, thinning interval 10) was used for "
+        "sensitivity runs. Scenarios that exceeded PSRF ≤ 1.10 were re-run with the primary model's full "
+        "sampling configuration (150,000 iterations, 75,000 burn-in, 3 chains, thinning interval 10).",
+        "PSRF = potential scale reduction factor (Gelman-Rubin diagnostic, convergence threshold ≤ 1.10). "
+        "DIC = deviance information criterion.",
+    ]
+    write_footnotes(ws, r + 1, n_cols, notes)
+    autosize(ws, [42, 11, 9, 10, 12, 14, 10, 11, 12, 28])
+    wb.save(OUT / "Table_S2_sensitivity.xlsx")
+
+    # HTML
+    html_rows = ["<tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr>"]
+
+    def html_section(label, rows_df):
+        out = [f"<tr class='subhead'><td colspan='{n_cols}'>{label}</td></tr>"]
+        for _, row in rows_df.iterrows():
+            rendered = render_row(row)
+            cells = "".join(
+                f"<td class='left'>{v}</td>" if (i + 1) in left_cols_idx else f"<td>{v}</td>"
+                for i, v in enumerate(rendered)
+            )
+            out.append(f"<tr>{cells}</tr>")
+        return out
+
+    html_rows.extend(html_section("Primary analysis", primary_rows))
+    html_rows.extend(html_section("Model perturbations", alt_rows))
+    html_rows.extend(html_section("Leave-one-out (LOO)", loo_rows))
+    table_html = "<table>" + "".join(html_rows) + "</table>"
+    body_html = f"<h2>{title}</h2><p class='caption'>{caption}</p>{table_html}"
+    for n in notes:
+        body_html += f"<p class='footnote'>{n}</p>"
+    (OUT / "Table_S2_sensitivity.html").write_text(html_page(title, body_html))
+
+
 def main():
+    build_s2()
     build_s8()
     build_s9()
     build_s10a()
