@@ -331,8 +331,9 @@ def build_s9():
 
     notes = [
         "✓ indicates the variant was genotyped in the WT arm; — indicates not tested. "
-        "European carrier frequencies used to compute expected misclassified counts (CPIC 2017): "
-        "HapB3 = 4.7%, *2A = 1.6%, c.2846A>T = 0.7%, *13 = 0.1%.",
+        "European carrier frequencies used to compute expected misclassified counts: HapB3 = 4.7%, "
+        "*2A = 1.6%, c.2846A>T = 0.7%, *13 = 0.1% (Amstutz et al., CPIC guideline for "
+        "fluoropyrimidines and DPYD, Clin Pharmacol Ther 2018; doi:10.1002/cpt.911).",
         "Expected misclassified = WT arm N × Σᵥ (carrier frequency of untested variant v). "
         "% of WT arm = expected misclassified / WT arm N × 100. "
         "Max event-rate shift = Σᵥ [carrier frequency of v × (expected event rate of v − pooled "
@@ -508,7 +509,7 @@ def build_s10b():
         "Scenario",
         "HapB3 OR",
         "95% CrI",
-        "Δ log-OR from primary",
+        "Δ OR from primary",
         "Max PSRF",
         "DIC",
         "Converged",
@@ -520,7 +521,7 @@ def build_s10b():
         "HapB3 vs wild-type odds ratio under best-case and worst-case allocation of the single expected discordant "
         "patient identified via tag-SNP genotyping (see Table S10a). Allocation tested against the two largest "
         "tag-SNP studies (Medwid_2023 and Wigle_2021). All four LD-adjusted scenarios converged (PSRF ≤ 1.10) "
-        "and remained within ±0.04 log-OR of the primary estimate."
+        "and remained within 0.04 OR units of the primary estimate (HapB3 OR 2.01, 95% CrI 1.29–3.19)."
     )
     n_cols = len(headers)
 
@@ -545,12 +546,14 @@ def build_s10b():
             cell.border = BORDER
         r += 1
     notes = [
-        "Δ log-OR from primary = log(HapB3 OR scenario) − log(HapB3 OR primary). Values within ±0.10 indicate "
+        "Δ OR from primary = HapB3 OR (scenario) − HapB3 OR (primary, 2.01). Absolute values < 0.10 indicate "
         "consistency with the primary analysis.",
         "PSRF = potential scale reduction factor (Gelman-Rubin diagnostic, convergence threshold ≤ 1.10). "
         "DIC = deviance information criterion.",
-        "Escalated = scenario was re-run with the primary model's full MCMC sampling configuration after the "
-        "reduced sensitivity-run sampling failed convergence; none of the LD scenarios required escalation.",
+        "Escalated = scenario was re-run with an extended MCMC configuration (200,000 iterations, "
+        "100,000 burn-in, 3 chains, thinning interval 20) after the sensitivity-run configuration "
+        "(150,000 iterations, 75,000 burn-in, 3 chains, thinning interval 10) failed convergence; "
+        "none of the LD scenarios required escalation.",
     ]
     write_footnotes(ws, r + 1, n_cols, notes)
     autosize(ws, [38, 11, 14, 18, 11, 11, 12, 12])
