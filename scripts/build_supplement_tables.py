@@ -221,6 +221,10 @@ def build_s8():
         r += 1
 
     notes = [
+        ("Full treatment SUCRA rankings (loose / strict): "
+         "WT (clean) 94.7 / 90.8, WT (biased) 85.1 / 88.6, HapB3 59.7 / 60.1, "
+         "*2A 24.9 / 24.9, *13 22.6 / 22.6, c.2846A>T 13.0 / 12.9. "
+         "Higher SUCRA = lower predicted toxicity. WT (clean) ranks first in both models."),
         (
             f"Convergence (loose): DIC = {diag['DIC'][0]}, max PSRF = {diag['max_PSRF'][0]}, "
             f"converged = {yn(diag['converged'][0])}.  "
@@ -442,10 +446,14 @@ def build_s10a():
     r += 1
 
     notes = [
-        "Discordant patients allocated to Medwid_2023 (scenario A) and Wigle_2021 (scenario B) — the two largest "
-        "tag-SNP studies — for the LD-adjusted re-analyses (see Table S10b).",
-        "Tag SNP c.1236G>A is in tight LD with causal HapB3 (D' = 1, r² ≈ 1 in European populations); "
-        "approximately 1 in 300 carriers is discordant.",
+        "Per-study expected discordant counts (column 6) remained below the LD-adjustment threshold (≥ 0.5) for "
+        "all 16 studies individually. The cumulative expected count across the six tag-SNP-only studies totals "
+        "0.50 patients, conservatively rounded up to 1; this single discordant patient is allocated to Medwid_2023 "
+        "(scenario A) and Wigle_2021 (scenario B) — the two largest tag-SNP-only studies — for the LD-adjusted "
+        "re-analyses (see Table S10b).",
+        "Tag SNP c.1236G>A is in tight LD with causal HapB3 c.1129-5923C>G (D' = 1, r² ≈ 1 in European populations; "
+        "Froehlich et al, 2015) with approximately 1 in 300 carriers discordant; concordance has been confirmed by "
+        "direct genotyping of both SNPs (Jennings et al, 2013; Lee et al, 2016; Froehlich et al, 2015).",
     ]
     write_footnotes(ws, r + 1, n_cols, notes)
     autosize(ws, [26, 30, 11, 13, 11, 14, 12, 13, 13, 14, 22])

@@ -84,14 +84,39 @@ generate_forest_pdf <- function(summary_df, output_file) {
            bg = plot_data$color[i], cex = 1.2)
   }
 
+  # Build legend dynamically; include only colour categories that appear in the
+  # plotted data so we don't advertise a category (e.g. "Materially different")
+  # that has zero scenarios.
+  has_nonconverged <- any(is_nonconverged)
+  has_material <- any(!is.na(plot_data$conclusion) &
+                      plot_data$conclusion == "Materially different")
+
+  legend_labels <- c("Primary", "Alternative scenario", "LOO study")
+  legend_pch    <- c(19, 19, 1)
+  legend_col    <- c("blue", "gray40", "gray40")
+  legend_lty    <- c(NA, NA, NA)
+  if (has_nonconverged) {
+    legend_labels <- c(legend_labels, "Non-converged")
+    legend_pch    <- c(legend_pch, 17)
+    legend_col    <- c(legend_col, "darkorange")
+    legend_lty    <- c(legend_lty, NA)
+  }
+  if (has_material) {
+    legend_labels <- c(legend_labels, "Materially different")
+    legend_pch    <- c(legend_pch, 19)
+    legend_col    <- c(legend_col, "red")
+    legend_lty    <- c(legend_lty, NA)
+  }
+  legend_labels <- c(legend_labels, "OR = 1.0", "Primary HapB3 OR")
+  legend_pch    <- c(legend_pch, NA, NA)
+  legend_col    <- c(legend_col, "gray60", "blue")
+  legend_lty    <- c(legend_lty, 2, 3)
+
   legend("topright",
-         legend = c("Primary", "Alternative scenario", "LOO study",
-                    "Non-converged", "Materially different",
-                    "OR = 1.0", "Primary HapB3 OR"),
-         pch = c(19, 19, 1, 17, 19, NA, NA),
-         col = c("blue", "gray40", "gray40", "darkorange", "red",
-                 "gray60", "blue"),
-         lty = c(NA, NA, NA, NA, NA, 2, 3),
+         legend = legend_labels,
+         pch = legend_pch,
+         col = legend_col,
+         lty = legend_lty,
          cex = 0.7, bg = "white")
 }
 
