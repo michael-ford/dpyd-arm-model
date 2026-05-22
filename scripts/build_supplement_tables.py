@@ -300,8 +300,9 @@ def build_s9():
     caption = (
         "Per-study estimate of patients potentially misclassified as wild-type because the study did not "
         "test for all four clinically actionable variants (HapB3, *2A, c.2846A>T, *13). Expected misclassified count "
-        "= WT arm N × pooled prevalence of untested variants. The maximum event-rate shift quantifies the worst-case "
-        "movement in the study's WT event rate if all misclassified patients were variant carriers and all had events."
+        "= WT arm N × Σ carrier frequency of each untested variant. The maximum event-rate shift quantifies the "
+        "expected upward movement in the study's observed WT event rate if all expected misclassified patients "
+        "experienced events at the variant-specific rates implied by the primary network meta-analysis."
     )
     headers = list(df_disp.columns)
     n_cols = len(headers)
@@ -332,11 +333,11 @@ def build_s9():
         "✓ indicates the variant was genotyped in the WT arm; — indicates not tested. "
         "European carrier frequencies used to compute expected misclassified counts (CPIC 2017): "
         "HapB3 = 4.7%, *2A = 1.6%, c.2846A>T = 0.7%, *13 = 0.1%.",
-        "Expected misclassified = WT arm N × Σ(carrier frequency for each untested variant). "
+        "Expected misclassified = WT arm N × Σᵥ (carrier frequency of untested variant v). "
         "% of WT arm = expected misclassified / WT arm N × 100. "
-        "Max event-rate shift = upper bound on the change in observed WT event rate if all "
-        "expected misclassified patients were variant carriers, weighted by variant-specific "
-        "expected event rates.",
+        "Max event-rate shift = Σᵥ [carrier frequency of v × (expected event rate of v − pooled "
+        "WT event rate, 0.323)], where expected event rate of v is derived by applying the primary "
+        "NMA odds ratio for variant v to the pooled WT baseline.",
     ]
     write_footnotes(ws, r + 1, n_cols, notes)
     autosize(ws, [26, 10, 10, 12, 9, 7, 12, 7, 28, 14, 11, 16])
