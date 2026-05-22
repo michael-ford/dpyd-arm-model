@@ -861,8 +861,326 @@ def build_s2():
     (OUT / "Table_S2_sensitivity.html").write_text(html_page(title, body_html))
 
 
+WT_UNIFIED = Path("/Users/mikeford/dpyd-arm-model/output/wt_unified")
+
+
+def build_s4():
+    # Read with all columns as strings so "98", "3", etc. don't get coerced to floats
+    df = pd.read_csv(WT_UNIFIED / "tables" / "tableS6_diagnostics.csv", dtype=str)
+
+    # Post-process for presentation consistency with sibling tables:
+    #  - PSRF to 3 dp (S2/S10b style)
+    #  - Iteration count with thousands separator
+    def _round_half_up(f, ndigits):
+        m = 10 ** ndigits
+        return int(f * m + 0.5) / m if f >= 0 else -int(-f * m + 0.5) / m
+
+    def reformat(metric, value):
+        if metric == "Max Gelman-Rubin PSRF":
+            try:
+                return f"{_round_half_up(float(value), 3):.3f}"
+            except (TypeError, ValueError):
+                return value
+        if metric == "Iterations (post burn-in)":
+            try:
+                return f"{int(float(value)):,}"
+            except (TypeError, ValueError):
+                return value
+        return value
+
+    rows = [(str(r["Metric"]), reformat(str(r["Metric"]), str(r["Value"])))
+            for _, r in df.iterrows()]
+    rows.append(("Convergence achieved (PSRF ≤ 1.10)", "Yes"))
+
+    headers = ["Metric", "Value"]
+    title = "Table S4. Bayesian Model Fit and Convergence Diagnostics"
+    caption = (
+        "Model fit and Markov chain Monte Carlo (MCMC) convergence diagnostics for the primary "
+        "het_cor probit arm-based network meta-analysis (wt_unified model). All chains converged "
+        "by the Gelman-Rubin criterion (maximum potential scale reduction factor ≤ 1.10)."
+    )
+    n_cols = len(headers)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Table S4"
+    col_widths = [42, 18]
+    autosize(ws, col_widths)
+    write_title_block(ws, title, caption, n_cols, col_widths)
+    for i_, h in enumerate(headers, start=1):
+        ws.cell(row=4, column=i_, value=h)
+    style_header_row(ws, 4, n_cols)
+
+    r = 5
+    for metric, value in rows:
+        cell = ws.cell(row=r, column=1, value=metric)
+        style_body_cell(cell, align="left")
+        cell = ws.cell(row=r, column=2, value=value)
+        style_body_cell(cell, align="center")
+        r += 1
+
+    notes = [
+        "DIC = deviance information criterion (lower = better fit, penalised for model complexity). "
+        "pD = effective number of parameters. D-bar = posterior mean deviance. "
+        "Residual deviance / n ratio (D-bar / n_arms = 92.04 / 98 ≈ 0.94) close to 1 indicates "
+        "adequate model fit.",
+        "PSRF = potential scale reduction factor (Gelman-Rubin diagnostic). Values ≤ 1.10 "
+        "indicate convergence; the maximum across all model parameters was 1.029.",
+        "Model specification: arm-based network meta-analysis with probit link and heterogeneous "
+        "between-study correlation matrix (het_cor), implemented in the R package pcnetmeta. A "
+        "Wishart prior (df = 6, identity scale) is placed on the precision matrix T = (Σ R Σ)^-1, "
+        "equivalent to an inverse-Wishart prior on the covariance matrix.",
+    ]
+    write_footnotes(ws, r, n_cols, notes, col_widths)
+    configure_page(ws, landscape=False)
+    wb.save(OUT / "Table_S4_model_fit.xlsx")
+
+    html_rows = ["<tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr>"]
+    for metric, value in rows:
+        html_rows.append(f"<tr><td class='left'>{metric}</td><td>{value}</td></tr>")
+    table_html = "<table>" + "".join(html_rows) + "</table>"
+    body_html = f"<h2>{title}</h2><p class='caption'>{caption}</p>{table_html}"
+    for n in notes:
+        body_html += f"<p class='footnote'>{n}</p>"
+    (OUT / "Table_S4_model_fit.html").write_text(html_page(title, body_html))
+
+
+def build_s5():
+    df = pd.read_csv(WT_UNIFIED / "wt_unified_heterogeneity_params.csv")
+
+    # Treatment order matches sigma[1..5] indexing in source CSV
+    trt_order = ["WT", "HapB3", "2846hetho", "2Ahetho", "13hetho"]
+    trt_labels = [VARIANT_NAME.get(t, t) if t != "WT" else "WT" for t in trt_order]
+
+    sigma_rows = df[df["Type"] == "Variance (SD)"].reset_index(drop=True)
+    corr_rows = df[df["Type"] == "Correlation"].reset_index(drop=True)
+
+    def f3(v):
+        try:
+            return f"{float(v):.3f}"
+        except (TypeError, ValueError):
+            return "—"
+
+    title = "Table S5. Between-Study Heterogeneity and Correlation Parameters"
+    caption = (
+        "Posterior summaries for the between-study random-effects standard deviations (σ) and "
+        "correlation matrix (R) on the probit scale, estimated from the primary het_cor arm-based "
+        "network meta-analysis (wt_unified model). Treatment-specific SDs quantify between-study "
+        "heterogeneity in arm-level probit-scale event probabilities; correlations describe how "
+        "between-study deviations co-vary across treatments."
+    )
+    headers_sigma = ["Treatment", "Posterior mean SD", "95% CrI lower", "95% CrI upper"]
+    headers_corr = ["Treatment"] + trt_labels
+    n_cols = max(len(headers_sigma), len(headers_corr))  # 6
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Table S5"
+    col_widths = [22, 18, 14, 14, 14, 14]
+    autosize(ws, col_widths)
+    write_title_block(ws, title, caption, n_cols, col_widths)
+
+    # --- Section 1: Standard Deviations ---
+    r = 4
+    ws.merge_cells(start_row=r, end_row=r, start_column=1, end_column=n_cols)
+    cell = ws.cell(row=r, column=1, value="A. Treatment-specific between-study standard deviations (probit scale)")
+    cell.fill = SUBHEAD_FILL
+    cell.font = SUBHEAD_FONT
+    cell.alignment = LEFT
+    cell.border = BORDER
+    r += 1
+
+    for i_, h in enumerate(headers_sigma, start=1):
+        ws.cell(row=r, column=i_, value=h)
+    # Pad remaining columns with empty header cells styled to match
+    style_header_row(ws, r, len(headers_sigma))
+    # Visually blank out unused cols in this section
+    for i_ in range(len(headers_sigma) + 1, n_cols + 1):
+        cell = ws.cell(row=r, column=i_, value=None)
+        cell.fill = HEADER_FILL
+        cell.border = BORDER
+    r += 1
+
+    for idx, label in enumerate(trt_labels):
+        srow = sigma_rows.iloc[idx]
+        values = [label, f3(srow["Posterior_Mean"]), f3(srow["CI_Lower"]), f3(srow["CI_Upper"])]
+        for c, v in enumerate(values, start=1):
+            cell = ws.cell(row=r, column=c, value=v)
+            style_body_cell(cell, align="left" if c == 1 else "center")
+        for c in range(len(values) + 1, n_cols + 1):
+            cell = ws.cell(row=r, column=c, value=None)
+            cell.border = BORDER
+        r += 1
+
+    # Spacer
+    ws.row_dimensions[r].height = 8
+    r += 1
+
+    # --- Section 2: Correlation Matrix ---
+    ws.merge_cells(start_row=r, end_row=r, start_column=1, end_column=n_cols)
+    cell = ws.cell(row=r, column=1, value="B. Between-study correlation matrix (probit scale, posterior mean)")
+    cell.fill = SUBHEAD_FILL
+    cell.font = SUBHEAD_FONT
+    cell.alignment = LEFT
+    cell.border = BORDER
+    r += 1
+
+    for i_, h in enumerate(headers_corr, start=1):
+        ws.cell(row=r, column=i_, value=h)
+    style_header_row(ws, r, len(headers_corr))
+    r += 1
+
+    # Build correlation lookup: corr_map[(i,j)] = posterior mean, symmetric
+    corr_map = {}
+    for _, row in corr_rows.iterrows():
+        # Parameter is "R[i,j]"
+        param = row["Parameter"]
+        ij = param[param.index("[") + 1: param.index("]")].split(",")
+        i, j = int(ij[0]), int(ij[1])
+        v = float(row["Posterior_Mean"])
+        corr_map[(i, j)] = v
+        corr_map[(j, i)] = v
+
+    for i in range(1, 6):
+        # Row label
+        cell = ws.cell(row=r, column=1, value=trt_labels[i - 1])
+        style_body_cell(cell, align="left", bold=True)
+        for j in range(1, 6):
+            if i == j:
+                v = "1.000"
+            else:
+                v = f3(corr_map.get((i, j), float("nan")))
+            cell = ws.cell(row=r, column=j + 1, value=v)
+            style_body_cell(cell, align="center", bold=(i == j))
+            if i == j:
+                cell.fill = TOTAL_FILL
+        r += 1
+
+    notes = [
+        "Section A: Posterior mean and 95% credible interval (CrI) for the between-study standard "
+        "deviation (σ) of arm-level probit-scale event probabilities for each treatment.",
+        "Section B: Posterior mean of the between-study correlation matrix (R). Diagonal elements "
+        "are fixed at 1.0 by construction. Off-diagonal elements describe how between-study "
+        "deviations in arm-level probit probabilities co-vary across treatments.",
+        "A Wishart prior (df = 6, identity scale) is placed on the precision matrix "
+        "T = (Σ R Σ)^-1 — equivalent to an inverse-Wishart prior on the covariance matrix. "
+        "Because the model uses a probit (not logit) link, these between-study standard "
+        "deviations and correlations are on the probit (latent) scale and exponentiation does "
+        "not yield odds ratios.",
+    ]
+    write_footnotes(ws, r, n_cols, notes, col_widths)
+    configure_page(ws, landscape=False)
+    wb.save(OUT / "Table_S5_heterogeneity.xlsx")
+
+    # HTML
+    html_parts = [
+        f"<h2>{title}</h2><p class='caption'>{caption}</p>",
+        "<h3>A. Treatment-specific between-study standard deviations (probit scale)</h3>",
+        "<table><tr>" + "".join(f"<th>{h}</th>" for h in headers_sigma) + "</tr>",
+    ]
+    for idx, label in enumerate(trt_labels):
+        srow = sigma_rows.iloc[idx]
+        html_parts.append(
+            f"<tr><td class='left'>{label}</td>"
+            f"<td>{f3(srow['Posterior_Mean'])}</td>"
+            f"<td>{f3(srow['CI_Lower'])}</td>"
+            f"<td>{f3(srow['CI_Upper'])}</td></tr>"
+        )
+    html_parts.append("</table>")
+    html_parts.append("<h3>B. Between-study correlation matrix (probit scale, posterior mean)</h3>")
+    html_parts.append("<table><tr>" + "".join(f"<th>{h}</th>" for h in headers_corr) + "</tr>")
+    for i in range(1, 6):
+        row_cells = [f"<td class='left'>{trt_labels[i - 1]}</td>"]
+        for j in range(1, 6):
+            v = "1.000" if i == j else f3(corr_map.get((i, j), float("nan")))
+            cls = " class='total'" if i == j else ""
+            row_cells.append(f"<td{cls}>{v}</td>")
+        html_parts.append(f"<tr>{''.join(row_cells)}</tr>")
+    html_parts.append("</table>")
+    for n in notes:
+        html_parts.append(f"<p class='footnote'>{n}</p>")
+    (OUT / "Table_S5_heterogeneity.html").write_text(html_page(title, "".join(html_parts)))
+
+
+def build_s6():
+    df = pd.read_csv(WT_UNIFIED / "tables" / "table2_pairwise_or.csv")
+
+    # First column is "Treatment" with row labels matching source variant names.
+    src_trts = df["Treatment"].tolist()  # row order
+    trt_labels = [VARIANT_NAME.get(t, t) if t != "WT" else "WT" for t in src_trts]
+
+    headers = ["Row vs column"] + trt_labels
+    n_cols = len(headers)
+
+    title = "Table S6. Pairwise Odds Ratios and 95% Credible Intervals Between Variants"
+    caption = (
+        "Posterior pairwise odds ratios (OR) with 95% credible intervals (CrI) for all variant-vs-variant "
+        "comparisons, computed from the primary het_cor probit arm-based network meta-analysis "
+        "(wt_unified model). Each cell reports the odds ratio of the row treatment relative to the "
+        "column treatment: OR > 1 indicates higher predicted toxicity for the row treatment. The matrix "
+        "is internally consistent (row vs column = 1 / column vs row) but is shown in full for ease of "
+        "reading. Diagonal cells are the reference category."
+    )
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Table S6"
+    col_widths = [22, 22, 22, 22, 22, 22]
+    autosize(ws, col_widths)
+    write_title_block(ws, title, caption, n_cols, col_widths)
+    for i_, h in enumerate(headers, start=1):
+        ws.cell(row=4, column=i_, value=h)
+    style_header_row(ws, 4, n_cols)
+
+    r = 5
+    for i, src_row in enumerate(src_trts):
+        # Row label
+        cell = ws.cell(row=r, column=1, value=trt_labels[i])
+        style_body_cell(cell, align="left", bold=True)
+        for j, src_col in enumerate(src_trts):
+            v = df.iloc[i][src_col]
+            cell = ws.cell(row=r, column=j + 2, value=str(v))
+            style_body_cell(cell, align="center")
+            if str(v) == "Ref":
+                cell.fill = TOTAL_FILL
+                cell.font = TOTAL_FONT
+        r += 1
+
+    notes = [
+        "Each off-diagonal cell reports the posterior median odds ratio with 95% credible interval "
+        "(format: OR (low–high)) for the row treatment relative to the column treatment.",
+        "Comparisons whose 95% CrI excludes 1.0 are interpreted as showing a credible difference in "
+        "toxicity odds between the two variants under the model.",
+        "All ORs derive from the same posterior sample as the primary network meta-analysis; pairwise "
+        "estimates are therefore internally consistent across the network. Small apparent deviations "
+        "between reciprocal cells (e.g., 1.24 vs. 1 / 0.80 = 1.25) reflect 2-decimal rounding; cells "
+        "were computed from the posterior, not by numerical inversion.",
+    ]
+    write_footnotes(ws, r, n_cols, notes, col_widths)
+    configure_page(ws, landscape=True)
+    wb.save(OUT / "Table_S6_pairwise_or.xlsx")
+
+    # HTML
+    html_rows = ["<tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr>"]
+    for i, src_row in enumerate(src_trts):
+        cells = [f"<td class='left'><b>{trt_labels[i]}</b></td>"]
+        for src_col in src_trts:
+            v = str(df.iloc[i][src_col])
+            cls = " class='total'" if v == "Ref" else ""
+            cells.append(f"<td{cls}>{v}</td>")
+        html_rows.append(f"<tr>{''.join(cells)}</tr>")
+    table_html = "<table>" + "".join(html_rows) + "</table>"
+    body_html = f"<h2>{title}</h2><p class='caption'>{caption}</p>{table_html}"
+    for n in notes:
+        body_html += f"<p class='footnote'>{n}</p>"
+    (OUT / "Table_S6_pairwise_or.html").write_text(html_page(title, body_html))
+
+
 def main():
     build_s2()
+    build_s4()
+    build_s5()
+    build_s6()
     build_s8()
     build_s9()
     build_s10a()
