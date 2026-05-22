@@ -1,0 +1,5 @@
+"scenario","HapB3_OR","CrI_low","CrI_high","delta_from_primary","PSRF","DIC","converged","escalated"
+"best_medwid",2.006,1.314,3.121,-0.004,1.025,151.17,TRUE,FALSE
+"best_wigle",1.999,1.312,3.133,-0.011,1.0283,151.4,TRUE,FALSE
+"worst_medwid",1.987,1.284,3.121,-0.023,1.0171,151.46,TRUE,FALSE
+"worst_wigle",1.971,1.279,3.101,-0.039,1.0178,151.44,TRUE,FALSE

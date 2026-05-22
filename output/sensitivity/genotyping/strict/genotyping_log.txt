@@ -1,0 +1,274 @@
+=============================================================
+DPYD Genotyping Misclassification Sensitivity Analysis
+Started: 2026-04-29 00:45:50.171648
+WT_Clean definition: strict
+=============================================================
+
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Loading required package: rjags
+Loading required package: coda
+Linked to JAGS 4.3.0
+Loaded modules: basemod,bugs
+
+###############################################################
+### PHASE 1: DATA PREPARATION                               ###
+###############################################################
+
+Raw data loaded: 98 rows
+
+STRICT definition: reclassifying 3 arms from WT_Clean to WT_Biased
+  Amstutz_2009: 1 WT_Clean arm(s) -> WT_Biased
+  Jennings_2013: 1 WT_Clean arm(s) -> WT_Biased
+  Froehlich_2015: 1 WT_Clean arm(s) -> WT_Biased
+
+=== Data Validation ===
+All validations passed
+
+[1] TRUE
+
+=== Treatment Summary ===
+# A tibble: 6 × 6
+   t.id Treatment n_arms total_n total_r event_rate
+  <dbl> <chr>      <int>   <dbl>   <dbl>      <dbl>
+1     1 WT_Clean       6    5344    1448      0.271
+2     2 WT_Biased     25   11311    3509      0.31 
+3     3 HapB3         16     378     162      0.429
+4     4 2846hetho     16     112      87      0.777
+5     5 2Ahetho       25     140     103      0.736
+6     6 13hetho       10      16      11      0.688
+# A tibble: 6 × 6
+   t.id Treatment n_arms total_n total_r event_rate
+  <dbl> <chr>      <int>   <dbl>   <dbl>      <dbl>
+1     1 WT_Clean       6    5344    1448      0.271
+2     2 WT_Biased     25   11311    3509      0.31 
+3     3 HapB3         16     378     162      0.429
+4     4 2846hetho     16     112      87      0.777
+5     5 2Ahetho       25     140     103      0.736
+6     6 13hetho       10      16      11      0.688
+=== Data Quality Warnings ===
+WARNING: Treatments with very small total N (< 20):
+  - 13hetho: N = 16 across 10 arm(s)
+  (Small samples may lead to unstable estimates)
+
+Total warnings: 1
+
+# A tibble: 31 × 3
+    s.id Study                   n_arms
+   <dbl> <chr>                    <int>
+ 1     1 Amstutz_2009                 4
+ 2     2 Boige_2016_FFCD_2000_05      4
+ 3     3 Boige_2016_PETACC_8          5
+ 4     4 Boisdron_Celle_2007          3
+ 5     5 Botticelli_2017              2
+ 6     6 Bozina_2021                  5
+ 7     7 Braun_2009                   2
+ 8     8 Cevik_2022                   3
+ 9     9 Cremolini_2018               3
+10    10 Etienne_Grimaldi_2017        4
+# ℹ 21 more rows
+=== Sparse Data Report ===
+Zero-event arms: 4 
+# A tibble: 4 × 4
+  Study          T             n     r
+  <chr>          <chr>     <dbl> <dbl>
+1 Amstutz_2009   2Ahetho       1     0
+2 Amstutz_2009   13hetho       1     0
+3 Froehlich_2015 2846hetho     3     0
+4 Froehlich_2015 2Ahetho       4     0
+
+Small sample arms (N <= 5): 42 
+
+=== WT Split Summary ===
+Studies with WT_Clean: 6 
+Studies with WT_Biased: 25 
+Studies with both: 0 
+
+
+###############################################################
+### PHASE 2: NETWORK CONNECTIVITY                           ###
+###############################################################
+
+Network connected: TRUE 
+Arms per treatment:
+  WT_Clean (t.id=1): 6 arms
+  WT_Biased (t.id=2): 25 arms
+  HapB3 (t.id=3): 16 arms
+  2846hetho (t.id=4): 16 arms
+  2Ahetho (t.id=5): 25 arms
+  13hetho (t.id=6): 10 arms
+
+Network connectivity: OK
+
+###############################################################
+### PHASE 3: MODEL FITTING                                  ###
+###############################################################
+
+Model: het_cor, Link: probit, Prior: invwishart
+MCMC: 150000 iter, 75000 burn-in, thin=10, 3 chains
+Data: 31 studies, 98 arms, 6 treatments
+
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 98
+   Unobserved stochastic nodes: 38
+   Total graph size: 2185
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+
+###############################################################
+### PHASE 4: CONVERGENCE DIAGNOSTICS                        ###
+###############################################################
+
+Max PSRF: 1.0374
+Threshold: 1.10
+
+Convergence status: CONVERGED
+
+###############################################################
+### PHASE 5: RESULTS EXTRACTION                             ###
+###############################################################
+
+=== Full Odds Ratio Matrix ===
+          WT_Clean                 WT_Biased               
+WT_Clean  --                       0.9467 (0.5190, 1.9920) 
+WT_Biased 1.0560 (0.5020, 1.9270)  --                      
+HapB3     2.0860 (0.9969, 4.0810)  1.9990 (1.2410, 3.2140) 
+2846hetho 8.5200 (3.5660, 19.3100) 8.1100 (4.4460, 15.2400)
+2Ahetho   6.7780 (2.9240, 14.3600) 6.4380 (3.8110, 11.1900)
+13hetho   6.9020 (1.9650, 27.5000) 6.5710 (2.1690, 24.1900)
+          HapB3                    2846hetho              
+WT_Clean  0.4794 (0.2450, 1.0030)  0.1174 (0.0518, 0.2804)
+WT_Biased 0.5003 (0.3111, 0.8058)  0.1233 (0.0656, 0.2249)
+HapB3     --                       0.2460 (0.1208, 0.4903)
+2846hetho 4.0650 (2.0390, 8.2800)  --                     
+2Ahetho   3.2280 (1.6940, 6.2920)  0.7960 (0.3792, 1.6300)
+13hetho   3.2900 (1.0400, 12.5900) 0.8136 (0.2382, 3.2080)
+          2Ahetho                 13hetho                
+WT_Clean  0.1475 (0.0697, 0.3419) 0.1449 (0.0364, 0.5088)
+WT_Biased 0.1553 (0.0894, 0.2624) 0.1522 (0.0413, 0.4610)
+HapB3     0.3098 (0.1589, 0.5902) 0.3040 (0.0795, 0.9616)
+2846hetho 1.2560 (0.6133, 2.6370) 1.2290 (0.3118, 4.1980)
+2Ahetho   --                      0.9758 (0.2571, 3.2010)
+13hetho   1.0250 (0.3124, 3.8890) --                     
+
+=== Key Pairwise Comparisons ===
+
+HapB3 vs WT_Clean:   OR = 2.0860 (0.9969, 4.0810)
+  95% CrI excludes 1.0: NO
+
+HapB3 vs WT_Biased:  OR = 1.9990 (1.2410, 3.2140)
+  95% CrI excludes 1.0: YES (significant)
+
+WT_Clean vs WT_Biased (diagnostic):  OR = 0.9467 (0.5190, 1.9920)
+  95% CrI excludes 1.0: NO (WT groups similar)
+
+=== All Variant ORs vs WT_Clean ===
+  WT_Clean    : --
+  WT_Biased   : OR = 1.0560 (0.5020, 1.9270)
+  HapB3       : OR = 2.0860 (0.9969, 4.0810)
+  2846hetho   : OR = 8.5200 (3.5660, 19.3100)
+  2Ahetho     : OR = 6.7780 (2.9240, 14.3600)
+  13hetho     : OR = 6.9020 (1.9650, 27.5000)
+
+=== SUCRA Rankings ===
+(Higher SUCRA = better = lower toxicity)
+
+  1. WT_Clean    : 90.8%
+  2. WT_Biased   : 88.6%
+  3. HapB3       : 60.1%
+  4. 2Ahetho     : 24.9%
+  5. 13hetho     : 22.6%
+  6. 2846hetho   : 12.9%
+
+=== Rank Probability Matrix ===
+          rank1  rank2  rank3  rank4  rank5  rank6 
+WT_Clean  0.5680 0.4058 0.0257 0.0005 0.0000 0.0000
+WT_Biased 0.4316 0.5658 0.0026 0.0000 0.0000 0.0000
+HapB3     0.0003 0.0271 0.9514 0.0211 0.0001 0.0000
+2846hetho 0.0000 0.0000 0.0000 0.1446 0.3568 0.4986
+2Ahetho   0.0000 0.0000 0.0004 0.4083 0.4283 0.1629
+13hetho   0.0001 0.0013 0.0198 0.4256 0.2147 0.3385
+
+=== Absolute Risk Estimates ===
+          Median (95% CI)        
+WT_Clean  0.2610 (0.1697, 0.4047)
+WT_Biased 0.2710 (0.2113, 0.3394)
+HapB3     0.4264 (0.3354, 0.5216)
+2846hetho 0.7511 (0.6256, 0.8474)
+2Ahetho   0.7056 (0.5870, 0.8044)
+13hetho   0.7100 (0.4543, 0.8955)
+
+=== Model Fit ===
+DIC: 151.65
+D.bar: 92.08
+pD: 59.56
+
+###############################################################
+### PHASE 6: SAVING OUTPUTS                                 ###
+###############################################################
+
+Saved: /analysis/output/sensitivity/genotyping/strict/genotyping_result.rds 
+Saved: /analysis/output/sensitivity/genotyping/strict/genotyping_convergence.rds 
+Saved: /analysis/output/sensitivity/genotyping/strict/genotyping_summary.csv 
+
+###############################################################
+### SUMMARY                                                 ###
+###############################################################
+
+=== Genotyping Misclassification Sensitivity Analysis ===
+
+Data: 31 studies, 98 arms, 6 treatments
+Model: het_cor, probit link, invwishart prior
+MCMC: standard (150K iter, 75K burn-in, thin 10)
+Convergence: CONVERGED (max PSRF = 1.0374)
+DIC: 151.65
+
+--- Key Comparisons ---
+
+  HapB3 vs WT_Clean:    OR = 2.0860 (0.9969, 4.0810)  [Not significant]
+  HapB3 vs WT_Biased:   OR = 1.9990 (1.2410, 3.2140)  [Significant]
+  WT_Clean vs WT_Biased: OR = 0.9467 (0.5190, 1.9920)  [WT groups similar]
+
+--- SUCRA Rankings (higher = lower toxicity) ---
+
+  1. WT_Clean    : 90.8%
+  2. WT_Biased   : 88.6%
+  3. HapB3       : 60.1%
+  4. 2Ahetho     : 24.9%
+  5. 13hetho     : 22.6%
+  6. 2846hetho   : 12.9%
+
+--- Interpretation ---
+
+  Log-OR difference (HapB3 vs WT_Clean vs HapB3 vs WT_Biased): 0.0426
+  --> HapB3 OR is SIMILAR regardless of WT genotyping quality.
+  WT_Clean and WT_Biased show NO significant difference.
+  Genotyping panel quality does not materially affect the WT baseline estimate.
+
+=============================================================
+Genotyping Sensitivity Analysis Complete
+Finished: 2026-04-29 00:50:53.261746
+=============================================================
+
+Outputs:
+  Result:       /analysis/output/sensitivity/genotyping/strict/genotyping_result.rds
+  Convergence:  /analysis/output/sensitivity/genotyping/strict/genotyping_convergence.rds
+  Summary:      /analysis/output/sensitivity/genotyping/strict/genotyping_summary.csv
+  Log:          /analysis/output/sensitivity/genotyping/strict/genotyping_log.txt

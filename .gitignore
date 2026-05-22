@@ -47,6 +47,11 @@ build/
 # Keep only the summary CSV, forest plot, and log
 output/sensitivity/scenarios/
 
+# Large MCMC posterior samples from genotyping / LD sensitivity (reproducible
+# via R/sensitivity_genotyping.R and R/sensitivity_ld.R)
+output/sensitivity/genotyping/**/*.rds
+output/sensitivity/ld/**/*.rds
+
 # Reference documents (not code)
 *.docx.pdf
 

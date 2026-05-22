@@ -1,0 +1,13 @@
+comparison,OR_loose,CrI_loose,CrI_excludes_1_loose,SUCRA_loose,OR_strict,CrI_strict,CrI_excludes_1_strict,SUCRA_strict
+WT_Biased vs WT_Clean,1.22,0.65-2.33,FALSE,85.1,1.06,0.50-1.93,FALSE,88.6
+HapB3 vs WT_Clean,2.41,1.28-4.69,TRUE,59.7,2.09,1.00-4.08,FALSE,60.1
+2846hetho vs WT_Clean,9.69,4.39-21.63,TRUE,13,8.52,3.57-19.31,TRUE,12.9
+2Ahetho vs WT_Clean,7.73,3.75-16.17,TRUE,24.9,6.78,2.92-14.36,TRUE,24.9
+13hetho vs WT_Clean,7.92,2.39-30.20,TRUE,22.6,6.90,1.97-27.50,TRUE,22.6
+HapB3 vs WT_Biased,1.98,1.18-3.33,TRUE,NA,2.00,1.24-3.21,TRUE,NA
+WT_Clean vs WT_Biased (diagnostic),0.82,0.43-1.53,FALSE,NA,0.95,0.52-1.99,FALSE,NA
+---DIAGNOSTICS---,,,,,,,,
+n_WT_Clean_cohorts,9,,,,6,,,
+DIC,151.82,,,,151.65,,,
+max_PSRF,1.0420,,,,1.0374,,,
+converged,TRUE,,,,TRUE,,,

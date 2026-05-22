@@ -1,0 +1,220 @@
+=============================================================
+DPYD LD Sensitivity Analysis
+Started: 2026-04-23 19:37:34.560085
+=============================================================
+
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Loading required package: rjags
+Loading required package: coda
+Linked to JAGS 4.3.0
+Loaded modules: basemod,bugs
+
+###############################################################
+### LOADING DATA                                            ###
+###############################################################
+
+Loaded 98 rows from data/Binary WT HapB3 Data for NMA (12-18-2025).xlsx
+
+=== Tag-SNP Study Verification ===
+  Amstutz_2009: N=7, R=4
+  Bozina_2021: N=22, R=10
+  Medwid_2023: N=41, R=14
+  Rosmarin_2015_arm_A: N=17, R=8
+  Rosmarin_2015_arm_B: N=18, R=12
+  Wigle_2021: N=41, R=14
+
+Total tag-SNP HapB3 N: 146
+Expected discordant (1/300): 0.49 -> rounded up to 1
+
+###############################################################
+### RUNNING LD SCENARIOS                                    ###
+###############################################################
+
+
+=============================================================
+Scenario: best_medwid
+Description: Discordant patient in Medwid_2023, no event (N: 41->40, R: 14)
+=============================================================
+
+  Adjusting Medwid_2023 HapB3 arm: N 41->40, R 14->14
+  NMA data: 31 studies, 98 arms
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 150000 iter, 75000 burn-in, thin=10, 3 chains
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 98
+   Unobserved stochastic nodes: 37
+   Total graph size: 2097
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0250
+  Saved: /analysis/output/sensitivity/ld/best_medwid/ld_best_medwid_result.rds
+
+  HapB3 OR: 2.0060 (1.3140, 3.1210)
+  Delta from primary (2.01): -0.0040
+  DIC: 151.17
+  Converged: TRUE
+
+=============================================================
+Scenario: best_wigle
+Description: Discordant patient in Wigle_2021, no event (N: 41->40, R: 14)
+=============================================================
+
+  Adjusting Wigle_2021 HapB3 arm: N 41->40, R 14->14
+  NMA data: 31 studies, 98 arms
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 150000 iter, 75000 burn-in, thin=10, 3 chains
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 98
+   Unobserved stochastic nodes: 37
+   Total graph size: 2097
+
+Initializing model
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0283
+  Saved: /analysis/output/sensitivity/ld/best_wigle/ld_best_wigle_result.rds
+
+  HapB3 OR: 1.9990 (1.3120, 3.1330)
+  Delta from primary (2.01): -0.0110
+  DIC: 151.40
+  Converged: TRUE
+
+=============================================================
+Scenario: worst_medwid
+Description: Discordant patient in Medwid_2023, had event (N: 41->40, R: 13)
+=============================================================
+
+  Adjusting Medwid_2023 HapB3 arm: N 41->40, R 14->13
+  NMA data: 31 studies, 98 arms
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 150000 iter, 75000 burn-in, thin=10, 3 chains
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 98
+   Unobserved stochastic nodes: 37
+   Total graph size: 2098
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0171
+  Saved: /analysis/output/sensitivity/ld/worst_medwid/ld_worst_medwid_result.rds
+
+  HapB3 OR: 1.9870 (1.2840, 3.1210)
+  Delta from primary (2.01): -0.0230
+  DIC: 151.46
+  Converged: TRUE
+
+=============================================================
+Scenario: worst_wigle
+Description: Discordant patient in Wigle_2021, had event (N: 41->40, R: 13)
+=============================================================
+
+  Adjusting Wigle_2021 HapB3 arm: N 41->40, R 14->13
+  NMA data: 31 studies, 98 arms
+  Model: het_cor, Link: probit, Prior: invwishart
+  MCMC: 150000 iter, 75000 burn-in, thin=10, 3 chains
+Start running MCMC...
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+Graph information:
+   Observed stochastic nodes: 98
+   Unobserved stochastic nodes: 37
+   Total graph size: 2098
+
+Initializing model
+
+Warning in jags.model(file = textConnection(modelstring), data = data.jags,  :
+  Adaptation incomplete
+NOTE: Stopping adaptation
+
+
+Start calculating MCMC convergence diagnostic statistics...
+Start calculating deviance information criterion statistics...
+Start saving trace plots...
+  Max PSRF: 1.0178
+  Saved: /analysis/output/sensitivity/ld/worst_wigle/ld_worst_wigle_result.rds
+
+  HapB3 OR: 1.9710 (1.2790, 3.1010)
+  Delta from primary (2.01): -0.0390
+  DIC: 151.44
+  Converged: TRUE
+
+###############################################################
+### ASSEMBLING SUMMARY                                      ###
+###############################################################
+
+Saved: /analysis/output/sensitivity/ld/ld_summary.csv
+
+=== LD Sensitivity Summary ===
+Primary HapB3 OR: 2.01
+
+Scenario             HapB3 OR (95% CrI)        Delta        PSRF     DIC      Converged 
+------------------------------------------------------------------------------------------ 
+best_medwid          2.0060 (1.3140, 3.1210)   -0.0040      1.0250   151.17   TRUE      
+best_wigle           1.9990 (1.3120, 3.1330)   -0.0110      1.0283   151.40   TRUE      
+worst_medwid         1.9870 (1.2840, 3.1210)   -0.0230      1.0171   151.46   TRUE      
+worst_wigle          1.9710 (1.2790, 3.1010)   -0.0390      1.0178   151.44   TRUE      
+
+=== Interpretation ===
+HapB3 OR range across scenarios: 1.9710 - 2.0060
+Delta from primary range: -0.0390 to -0.0040
+All scenarios converged: TRUE
+
+Conclusion: LD misclassification has negligible impact on HapB3 OR estimate.
+The primary finding is robust to tag-SNP discordance.
+
+=============================================================
+LD Sensitivity Analysis Complete
+Finished: 2026-04-23 19:55:02.399833
+=============================================================
+
+Outputs:
+  Summary: /analysis/output/sensitivity/ld/ld_summary.csv
+  Log: /analysis/output/sensitivity/ld/ld_sensitivity_log.txt
+
+Per-scenario results saved in:
+  /analysis/output/sensitivity/ld/best_medwid/ld_best_medwid_result.rds
+  /analysis/output/sensitivity/ld/best_wigle/ld_best_wigle_result.rds
+  /analysis/output/sensitivity/ld/worst_medwid/ld_worst_medwid_result.rds
+  /analysis/output/sensitivity/ld/worst_wigle/ld_worst_wigle_result.rds
