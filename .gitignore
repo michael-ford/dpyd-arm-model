@@ -57,3 +57,4 @@ output/sensitivity/ld/**/*.rds
 
 # Duplicate data file in root
 /Binary WT HapB3 Data for NMA (12-18-2025).xlsx
+docs/
