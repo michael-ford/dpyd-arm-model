@@ -34,9 +34,13 @@ VARIANT_NAME = {
 
 HEADER_FILL = PatternFill("solid", fgColor="1F3864")
 HEADER_FONT = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
-TITLE_FONT = Font(name="Calibri", size=12, bold=True)
-CAPTION_FONT = Font(name="Calibri", size=9, italic=True, color="404040")
-FOOTNOTE_FONT = Font(name="Calibri", size=9, color="404040")
+TITLE_FONT = Font(name="Calibri", size=14, bold=True, color="1F3864")
+TITLE_FILL = PatternFill("solid", fgColor="E7EBF5")
+CAPTION_LABEL_FONT = Font(name="Calibri", size=10, bold=True, color="404040")
+CAPTION_FONT = Font(name="Calibri", size=10, italic=True, color="404040")
+NOTES_HEADER_FONT = Font(name="Calibri", size=11, bold=True, color="404040")
+NOTES_HEADER_FILL = PatternFill("solid", fgColor="F2F2F2")
+FOOTNOTE_FONT = Font(name="Calibri", size=9, italic=True, color="404040")
 BODY_FONT = Font(name="Calibri", size=10)
 TOTAL_FILL = PatternFill("solid", fgColor="EDEDED")
 TOTAL_FONT = Font(name="Calibri", size=10, bold=True)
@@ -45,6 +49,7 @@ THIN = Side(border_style="thin", color="808080")
 BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 CENTER = Alignment(horizontal="center", vertical="center", wrap_text=True)
 LEFT = Alignment(horizontal="left", vertical="center", wrap_text=True)
+LEFT_TOP = Alignment(horizontal="left", vertical="top", wrap_text=True)
 TITLE_ALIGN = Alignment(horizontal="left", vertical="center", wrap_text=True)
 
 
@@ -68,22 +73,103 @@ def autosize(ws, widths):
         ws.column_dimensions[get_column_letter(i)].width = w
 
 
-def write_title_block(ws, title, caption, n_cols):
-    ws.cell(row=1, column=1, value=title).font = TITLE_FONT
-    ws.cell(row=1, column=1).alignment = TITLE_ALIGN
+def _estimate_height(text, total_width_chars, char_factor=1.05, line_height=15, min_lines=1):
+    """Rough estimate of row height needed for wrapped text."""
+    if not text:
+        return line_height * min_lines
+    # Count explicit newlines
+    explicit_lines = text.count("\n") + 1
+    longest = max(len(line) for line in text.split("\n"))
+    wrapped_lines = max(1, int((longest * char_factor) / max(total_width_chars, 1)) + 1)
+    lines = max(min_lines, explicit_lines + wrapped_lines - 1)
+    return lines * line_height + 4
+
+
+def write_title_block(ws, title, caption, n_cols, col_widths=None):
+    """
+    Layout (occupies rows 1-3; header should be written to row 4):
+      Row 1: Title — bold 14pt, light-blue banner
+      Row 2: Caption — labeled "Caption: <text>" — italic 10pt
+      Row 3: spacer
+    """
+    # Row 1: Title
+    cell = ws.cell(row=1, column=1, value=title)
+    cell.font = TITLE_FONT
+    cell.fill = TITLE_FILL
+    cell.alignment = TITLE_ALIGN
     ws.merge_cells(start_row=1, end_row=1, start_column=1, end_column=n_cols)
-    ws.cell(row=2, column=1, value=caption).font = CAPTION_FONT
-    ws.cell(row=2, column=1).alignment = TITLE_ALIGN
+    for c in range(2, n_cols + 1):
+        ws.cell(row=1, column=c).fill = TITLE_FILL
+    ws.row_dimensions[1].height = 26
+
+    # Row 2: Caption with bold "Caption:" prefix
+    from openpyxl.cell.rich_text import CellRichText, TextBlock
+    from openpyxl.cell.text import InlineFont
+
+    label_font = InlineFont(rFont="Calibri", sz=10, b=True, color="404040")
+    text_font = InlineFont(rFont="Calibri", sz=10, i=True, color="404040")
+    rich = CellRichText(
+        TextBlock(label_font, "Caption: "),
+        TextBlock(text_font, caption),
+    )
+    cap_cell = ws.cell(row=2, column=1)
+    cap_cell.value = rich
+    cap_cell.alignment = LEFT_TOP
     ws.merge_cells(start_row=2, end_row=2, start_column=1, end_column=n_cols)
-    ws.row_dimensions[2].height = 32
+    total_w = sum(col_widths) if col_widths else max(60, n_cols * 12)
+    ws.row_dimensions[2].height = _estimate_height(
+        "Caption: " + caption, total_w, char_factor=1.0, line_height=14, min_lines=2,
+    )
+    # Row 3: spacer separating caption from header row
+    ws.row_dimensions[3].height = 8
 
 
-def write_footnotes(ws, start_row, n_cols, notes):
-    for i, note in enumerate(notes):
-        r = start_row + i
-        ws.cell(row=r, column=1, value=note).font = FOOTNOTE_FONT
-        ws.cell(row=r, column=1).alignment = TITLE_ALIGN
+def write_footnotes(ws, start_row, n_cols, notes, col_widths=None):
+    """
+    Layout starting at `start_row`:
+      Row N:   blank spacer
+      Row N+1: "Notes:" section header (bold, light-gray banner)
+      Row N+2 .. N+1+len(notes): numbered footnotes "1. <text>", "2. <text>", ...
+    """
+    # spacer
+    ws.row_dimensions[start_row].height = 6
+    # Notes header
+    hdr_row = start_row + 1
+    cell = ws.cell(row=hdr_row, column=1, value="Notes:")
+    cell.font = NOTES_HEADER_FONT
+    cell.fill = NOTES_HEADER_FILL
+    cell.alignment = LEFT
+    ws.merge_cells(start_row=hdr_row, end_row=hdr_row, start_column=1, end_column=n_cols)
+    for c in range(2, n_cols + 1):
+        ws.cell(row=hdr_row, column=c).fill = NOTES_HEADER_FILL
+    ws.row_dimensions[hdr_row].height = 20
+
+    total_w = sum(col_widths) if col_widths else max(60, n_cols * 12)
+    for i, note in enumerate(notes, start=1):
+        r = hdr_row + i
+        text = f"{i}. {note}"
+        cell = ws.cell(row=r, column=1, value=text)
+        cell.font = FOOTNOTE_FONT
+        cell.alignment = LEFT_TOP
         ws.merge_cells(start_row=r, end_row=r, start_column=1, end_column=n_cols)
+        ws.row_dimensions[r].height = _estimate_height(
+            text, total_w, char_factor=1.0, line_height=12, min_lines=1,
+        )
+
+
+def configure_page(ws, landscape=False):
+    """Set print orientation and fit-to-width so the table prints cleanly."""
+    from openpyxl.worksheet.page import PageMargins
+    if landscape:
+        ws.page_setup.orientation = ws.ORIENTATION_LANDSCAPE
+    else:
+        ws.page_setup.orientation = ws.ORIENTATION_PORTRAIT
+    ws.page_setup.paperSize = ws.PAPERSIZE_LETTER
+    ws.page_setup.fitToWidth = 1
+    ws.page_setup.fitToHeight = 0
+    ws.sheet_properties.pageSetUpPr.fitToPage = True
+    ws.print_options.horizontalCentered = True
+    ws.page_margins = PageMargins(left=0.4, right=0.4, top=0.5, bottom=0.5)
 
 
 HTML_CSS = """
@@ -184,21 +270,23 @@ def build_s8():
     ws = wb.active
     ws.title = "Table S8"
     n_cols = len(display_headers)
-    write_title_block(ws, title, caption, n_cols)
+    col_widths = [38, 9, 14, 12, 11, 9, 14, 12, 11]
+    autosize(ws, col_widths)
+    write_title_block(ws, title, caption, n_cols, col_widths)
 
-    ws.merge_cells(start_row=3, end_row=4, start_column=1, end_column=1)
-    cell = ws.cell(row=3, column=1, value="Comparison")
+    ws.merge_cells(start_row=4, end_row=5, start_column=1, end_column=1)
+    cell = ws.cell(row=4, column=1, value="Comparison")
     cell.fill = HEADER_FILL
     cell.font = HEADER_FONT
     cell.alignment = CENTER
     cell.border = BORDER
 
-    ws.cell(row=3, column=2, value="Loose definition (n = 9 WT-clean cohorts)")
-    ws.merge_cells(start_row=3, end_row=3, start_column=2, end_column=5)
-    ws.cell(row=3, column=6, value="Strict definition (n = 6 WT-clean cohorts)")
-    ws.merge_cells(start_row=3, end_row=3, start_column=6, end_column=9)
+    ws.cell(row=4, column=2, value="Loose definition (n = 9 WT-clean cohorts)")
+    ws.merge_cells(start_row=4, end_row=4, start_column=2, end_column=5)
+    ws.cell(row=4, column=6, value="Strict definition (n = 6 WT-clean cohorts)")
+    ws.merge_cells(start_row=4, end_row=4, start_column=6, end_column=9)
     for c in (2, 6):
-        cell = ws.cell(row=3, column=c)
+        cell = ws.cell(row=4, column=c)
         cell.fill = HEADER_FILL
         cell.font = HEADER_FONT
         cell.alignment = CENTER
@@ -207,13 +295,13 @@ def build_s8():
     for i, h in enumerate(display_headers, start=1):
         if i == 1:
             continue
-        cell = ws.cell(row=4, column=i, value=h)
+        cell = ws.cell(row=5, column=i, value=h)
         cell.fill = HEADER_FILL
         cell.font = HEADER_FONT
         cell.alignment = CENTER
         cell.border = BORDER
 
-    r = 5
+    r = 6
     for row in rows:
         for c, v in enumerate(row, start=1):
             cell = ws.cell(row=r, column=c, value=v)
@@ -236,10 +324,10 @@ def build_s8():
         ("PSRF = potential scale reduction factor (Gelman-Rubin diagnostic, threshold ≤ 1.10). "
          "DIC = deviance information criterion."),
     ]
-    write_footnotes(ws, r + 1, n_cols, notes)
-    autosize(ws, [38, 9, 14, 12, 11, 9, 14, 12, 11])
-    ws.row_dimensions[3].height = 22
+    write_footnotes(ws, r, n_cols, notes, col_widths)
     ws.row_dimensions[4].height = 22
+    ws.row_dimensions[5].height = 22
+    configure_page(ws, landscape=True)
     wb.save(OUT / "Table_S8_genotyping.xlsx")
 
     html_rows = [
@@ -314,12 +402,14 @@ def build_s9():
     wb = Workbook()
     ws = wb.active
     ws.title = "Table S9"
-    write_title_block(ws, title, caption, n_cols)
+    col_widths = [26, 10, 10, 12, 9, 7, 12, 7, 28, 14, 11, 16]
+    autosize(ws, col_widths)
+    write_title_block(ws, title, caption, n_cols, col_widths)
     for i, h in enumerate(headers, start=1):
-        ws.cell(row=3, column=i, value=h)
-    style_header_row(ws, 3, n_cols)
+        ws.cell(row=4, column=i, value=h)
+    style_header_row(ws, 4, n_cols)
 
-    r = 4
+    r = 5
     for _, row in df_disp.iterrows():
         for c, h in enumerate(headers, start=1):
             cell = ws.cell(row=r, column=c, value=row[h])
@@ -344,8 +434,8 @@ def build_s9():
         "WT event rate, 0.323)], where expected event rate of v is derived by applying the primary "
         "NMA odds ratio for variant v to the pooled WT baseline.",
     ]
-    write_footnotes(ws, r + 1, n_cols, notes)
-    autosize(ws, [26, 10, 10, 12, 9, 7, 12, 7, 28, 14, 11, 16])
+    write_footnotes(ws, r, n_cols, notes, col_widths)
+    configure_page(ws, landscape=True)
     wb.save(OUT / "Table_S9_qba.xlsx")
 
     html_rows = ["<tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr>"]
@@ -426,12 +516,14 @@ def build_s10a():
     wb = Workbook()
     ws = wb.active
     ws.title = "Table S10a"
-    write_title_block(ws, title, caption, n_cols)
+    col_widths = [26, 30, 11, 13, 11, 14, 12, 13, 13, 14, 22]
+    autosize(ws, col_widths)
+    write_title_block(ws, title, caption, n_cols, col_widths)
     for i_, h in enumerate(headers, start=1):
-        ws.cell(row=3, column=i_, value=h)
-    style_header_row(ws, 3, n_cols)
+        ws.cell(row=4, column=i_, value=h)
+    style_header_row(ws, 4, n_cols)
 
-    r = 4
+    r = 5
     for _, row in df_disp.iterrows():
         for c, h in enumerate(headers, start=1):
             cell = ws.cell(row=r, column=c, value=row[h])
@@ -455,8 +547,8 @@ def build_s10a():
         "Froehlich et al, 2015) with approximately 1 in 300 carriers discordant; concordance has been confirmed by "
         "direct genotyping of both SNPs (Jennings et al, 2013; Lee et al, 2016; Froehlich et al, 2015).",
     ]
-    write_footnotes(ws, r + 1, n_cols, notes)
-    autosize(ws, [26, 30, 11, 13, 11, 14, 12, 13, 13, 14, 22])
+    write_footnotes(ws, r, n_cols, notes, col_widths)
+    configure_page(ws, landscape=True)
     wb.save(OUT / "Table_S10a_ld_breakdown.xlsx")
 
     html_rows = ["<tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr>"]
@@ -536,11 +628,13 @@ def build_s10b():
     wb = Workbook()
     ws = wb.active
     ws.title = "Table S10b"
-    write_title_block(ws, title, caption, n_cols)
+    col_widths = [38, 11, 14, 18, 11, 11, 12, 12]
+    autosize(ws, col_widths)
+    write_title_block(ws, title, caption, n_cols, col_widths)
     for i_, h in enumerate(headers, start=1):
-        ws.cell(row=3, column=i_, value=h)
-    style_header_row(ws, 3, n_cols)
-    r = 4
+        ws.cell(row=4, column=i_, value=h)
+    style_header_row(ws, 4, n_cols)
+    r = 5
     for row in rows:
         is_primary = row[0].startswith("Primary")
         for c, v in enumerate(row, start=1):
@@ -563,8 +657,8 @@ def build_s10b():
         "(150,000 iterations, 75,000 burn-in, 3 chains, thinning interval 10) failed convergence; "
         "none of the LD scenarios required escalation.",
     ]
-    write_footnotes(ws, r + 1, n_cols, notes)
-    autosize(ws, [38, 11, 14, 18, 11, 11, 12, 12])
+    write_footnotes(ws, r, n_cols, notes, col_widths)
+    configure_page(ws, landscape=False)
     wb.save(OUT / "Table_S10b_ld_summary.xlsx")
 
     html_rows = ["<tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr>"]
@@ -693,10 +787,12 @@ def build_s2():
     wb = Workbook()
     ws = wb.active
     ws.title = "Table S2"
-    write_title_block(ws, title, caption, n_cols)
+    col_widths = [42, 11, 9, 10, 12, 14, 10, 11, 12, 28]
+    autosize(ws, col_widths)
+    write_title_block(ws, title, caption, n_cols, col_widths)
     for i_, h in enumerate(headers, start=1):
-        ws.cell(row=3, column=i_, value=h)
-    style_header_row(ws, 3, n_cols)
+        ws.cell(row=4, column=i_, value=h)
+    style_header_row(ws, 4, n_cols)
 
     left_cols_idx = {1, 10}  # Scenario and Conclusion
 
@@ -718,7 +814,7 @@ def build_s2():
             r += 1
         return r
 
-    r = 4
+    r = 5
     r = write_section(r, "Primary analysis", primary_rows)
     r = write_section(r, "Model perturbations", alt_rows)
     r = write_section(r, "Leave-one-out (LOO)", loo_rows)
@@ -737,8 +833,8 @@ def build_s2():
         "PSRF = potential scale reduction factor (Gelman-Rubin diagnostic, convergence threshold ≤ 1.10). "
         "DIC = deviance information criterion.",
     ]
-    write_footnotes(ws, r + 1, n_cols, notes)
-    autosize(ws, [42, 11, 9, 10, 12, 14, 10, 11, 12, 28])
+    write_footnotes(ws, r, n_cols, notes, col_widths)
+    configure_page(ws, landscape=True)
     wb.save(OUT / "Table_S2_sensitivity.xlsx")
 
     # HTML
