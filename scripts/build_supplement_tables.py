@@ -539,10 +539,12 @@ def build_s10a():
 
     notes = [
         "Per-study expected discordant counts (column 6) remained below the LD-adjustment threshold (≥ 0.5) for "
-        "all 16 studies individually. The cumulative expected count across the six tag-SNP-only studies totals "
-        "0.50 patients, conservatively rounded up to 1; this single discordant patient is allocated to Medwid_2023 "
-        "(scenario A) and Wigle_2021 (scenario B) — the two largest tag-SNP-only studies — for the LD-adjusted "
-        "re-analyses (see Table S10b).",
+        "all 16 studies individually. Kleibl_2009 is excluded from the tag-SNP-only count below as its c.1236G>A "
+        "genotyping was incidental rather than the primary HapB3 assay. The cumulative expected count across the "
+        "six tag-SNP-only studies (Amstutz_2009, Bozina_2021, Medwid_2023, Rosmarin_2015 arms A and B, Wigle_2021) "
+        "totals 0.49 patients, conservatively rounded up to 1; this single discordant patient is allocated to "
+        "Medwid_2023 (scenario A) and Wigle_2021 (scenario B) — the two largest tag-SNP-only studies — for the "
+        "LD-adjusted re-analyses (see Table S10b).",
         "Tag SNP c.1236G>A is in tight LD with causal HapB3 c.1129-5923C>G (D' = 1, r² ≈ 1 in European populations; "
         "Froehlich et al, 2015) with approximately 1 in 300 carriers discordant; concordance has been confirmed by "
         "direct genotyping of both SNPs (Jennings et al, 2013; Lee et al, 2016; Froehlich et al, 2015).",
