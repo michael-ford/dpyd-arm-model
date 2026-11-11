@@ -1,60 +1,8 @@
-# Environment
+/runs/
+/MCMC_STARTED
 .env
-.env.local
-.env.*.local
-
-# Dependencies
-node_modules/
+.env.*
+.DS_Store
 __pycache__/
 *.pyc
 .venv/
-venv/
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Dev container (local environment)
-.devcontainer/
-
-# macOS
-.DS_Store
-
-# Build
-dist/
-build/
-*.egg-info/
-
-# Databases
-*.db
-
-# Local tooling
-.mcp.json
-.nvmrc
-.qlty/
-.mypy_cache/
-
-# Claude Code (local settings)
-.claude/
-
-# Large MCMC sample files (regenerate via Docker)
-*_mcmc_samples.rds
-*_heterogeneity_mcmc.rds
-
-# Sensitivity analysis per-scenario artifacts (trace plots, RDS, diagnostics)
-# Keep only the summary CSV, forest plot, and log
-output/sensitivity/scenarios/
-
-# Large MCMC posterior samples from genotyping / LD sensitivity (reproducible
-# via R/sensitivity_genotyping.R and R/sensitivity_ld.R)
-output/sensitivity/genotyping/**/*.rds
-output/sensitivity/ld/**/*.rds
-
-# Reference documents (not code)
-*.docx.pdf
-
-# Duplicate data file in root
-/Binary WT HapB3 Data for NMA (12-18-2025).xlsx
-docs/

@@ -1,0 +1,47 @@
+"scenario","analysis_family","comparison","label","or_median","or_lower_95_cri","or_upper_95_cri"
+"primary","core","HapB3 vs WT","Primary",1.72650158394933,1.00041234292026,2.9104162655257
+"sensitivity_exclude_cevik","core","HapB3 vs WT","Exclude Cevik",1.64977202652474,0.939257796962504,2.80456890978729
+"sensitivity_include_iachetta_kleibl","core","HapB3 vs WT","Include Iachetta and Kleibl",1.69031288543055,0.979170130796839,2.84678405421779
+"sensitivity_include_boisdron_overlap","core","HapB3 vs WT","Include Boisdron-Celle overlap",1.75067130315739,1.00791703856015,2.99055126140495
+"sensitivity_exclude_onesti","core","HapB3 vs WT","Exclude Onesti",1.71356003440022,0.994889541173251,2.90565798993494
+"sensitivity_exclude_genotype_informed_carriers","core","HapB3 vs WT","Exclude genotype-informed carriers",2.03374594371089,1.35764175096086,3.18129940795024
+"sensitivity_exclude_pk_informed_morel","core","HapB3 vs WT","Exclude PK-informed Morel",1.68381375778404,0.981837581339156,2.82740990111916
+"sensitivity_exclude_all_treatment_moderated","core","HapB3 vs WT","Exclude all treatment-moderated",1.97207649374926,1.33958458967367,3.05758216428302
+"sensitivity_wigle_early","core","HapB3 vs WT","Wigle early window",1.66677718831942,0.938427021140217,2.86388557510685
+"sensitivity_cremolini_first_four","core","HapB3 vs WT","Cremolini first four cycles",1.7112221307819,0.991972043718772,2.91337334603319
+"sensitivity_compound_lower_function","core","HapB3 vs WT","Compound lower-function allocation",1.71986483776269,1.00380408213104,2.9091282564165
+"sensitivity_compound_reciprocal","core","HapB3 vs WT","Compound reciprocal allocation",1.74328708394815,1.0067035896962,2.97229861683414
+"genotyping_wt_split_loose","genotyping","HapB3 vs WT_Clean","Loose: HapB3 vs WT_Clean",1.32130061143995,0.62360665454948,2.67186393339199
+"genotyping_wt_split_loose","genotyping","HapB3 vs WT_Biased","Loose: HapB3 vs WT_Biased",2.09629825600375,1.08464071972078,4.08083026815852
+"genotyping_wt_split_strict","genotyping","HapB3 vs WT_Clean","Strict: HapB3 vs WT_Clean",1.16427545232862,0.51018290999277,2.61600993495622
+"genotyping_wt_split_strict","genotyping","HapB3 vs WT_Biased","Strict: HapB3 vs WT_Biased",2.06184202196731,1.11967384706465,3.77262482697924
+"sparse_exclude_n2","sparse","HapB3 vs WT","Exclude carrier arms with N <= 2",1.70981391317515,1.02722978331838,2.82318710417696
+"ld_best_bozina","ld","HapB3 vs WT","Bozina 2021: best case",1.73589229690812,1.0114684657691,2.92052397171756
+"ld_worst_bozina","ld","HapB3 vs WT","Bozina 2021: worst case",1.70306261969217,0.977836425927392,2.90473680647433
+"ld_best_wigle_prospective","ld","HapB3 vs WT","Wigle 2021 prospective: best case",1.73802974475205,1.01222885237093,2.93980569994584
+"ld_worst_wigle_prospective","ld","HapB3 vs WT","Wigle 2021 prospective: worst case",1.68237575092161,0.964570154820795,2.88410754496204
+"ld_best_rosmarin_arm_b","ld","HapB3 vs WT","Rosmarin 2015 arm B: best case",1.74123691921239,1.00874394931601,2.96405806681801
+"ld_worst_rosmarin_arm_b","ld","HapB3 vs WT","Rosmarin 2015 arm B: worst case",1.70751832476899,0.994587193084426,2.89798025127308
+"loo_exclude_Boige_2016_FFCD_2000_05","loo","HapB3 vs WT","Exclude Boige 2016 FFCD 2000 05",1.74041050601627,0.977700105327525,3.06088156978001
+"loo_exclude_Boige_2016_PETACC_8","loo","HapB3 vs WT","Exclude Boige 2016 PETACC 8",1.75294408219491,0.936852638427014,3.14272700598799
+"loo_exclude_Botticelli_2017","loo","HapB3 vs WT","Exclude Botticelli 2017",1.70749097580241,0.987053537244972,2.88590400339896
+"loo_exclude_Bozina_2021","loo","HapB3 vs WT","Exclude Bozina 2021",1.9175959526877,1.11222525993087,3.28083042831482
+"loo_exclude_Braun_2009","loo","HapB3 vs WT","Exclude Braun 2009",1.74115416682701,1.01950544946289,2.93242491461335
+"loo_exclude_Cevik_2022","loo","HapB3 vs WT","Exclude Cevik 2022",1.64977202652474,0.939257796962504,2.80456890978729
+"loo_exclude_Cremolini_2018","loo","HapB3 vs WT","Exclude Cremolini 2018",1.72995179618774,0.992551603331443,2.96742070339177
+"loo_exclude_Etienne_Grimaldi_2017","loo","HapB3 vs WT","Exclude Etienne Grimaldi 2017",1.77377362141119,1.02362904060417,3.06268768355022
+"loo_exclude_Falvella_2015","loo","HapB3 vs WT","Exclude Falvella 2015",1.74871583566566,0.99348222609805,3.01222090199341
+"loo_exclude_Froehlich_2015","loo","HapB3 vs WT","Exclude Froehlich 2015",1.50373878453741,0.870785795723856,2.53505517699703
+"loo_exclude_Ikonnikova_2024","loo","HapB3 vs WT","Exclude Ikonnikova 2024",1.75858231315233,0.991865860619508,3.07833448440202
+"loo_exclude_Jennings_2013","loo","HapB3 vs WT","Exclude Jennings 2013",1.70218623810779,0.958927491603657,2.96956810596781
+"loo_exclude_Largillier_2006","loo","HapB3 vs WT","Exclude Largillier 2006",1.71289317124321,0.997529820047344,2.90612381633704
+"loo_exclude_Lee_N0147","loo","HapB3 vs WT","Exclude Lee N0147",1.74916978548992,0.942447307848819,3.13674143539356
+"loo_exclude_Loganayagam_2013","loo","HapB3 vs WT","Exclude Loganayagam 2013",1.69180736649993,0.972881762604348,2.90231789916348
+"loo_exclude_Morel_2006","loo","HapB3 vs WT","Exclude Morel 2006",1.68381375778404,0.981837581339156,2.82740990111916
+"loo_exclude_Onesti_2017","loo","HapB3 vs WT","Exclude Onesti 2017",1.71356003440022,0.994889541173251,2.90565798993494
+"loo_exclude_Ragia_2023","loo","HapB3 vs WT","Exclude Ragia 2023",1.655340705804,0.945536245006281,2.83470476391757
+"loo_exclude_Rosmarin_2015","loo","HapB3 vs WT","Exclude Rosmarin 2015",1.56708189231362,0.845846633752714,2.82294475429596
+"loo_exclude_Salgueiro_2004","loo","HapB3 vs WT","Exclude Salgueiro 2004",1.715008747445,0.99119321478674,2.89247175645201
+"loo_exclude_Schwab_2008","loo","HapB3 vs WT","Exclude Schwab 2008",1.7332924599553,0.996352913333726,2.9844920308431
+"loo_exclude_Toffoli_2015","loo","HapB3 vs WT","Exclude Toffoli 2015",1.71777036455654,0.973152968948567,2.96899596438477
+"loo_exclude_Wigle_2021_prospective","loo","HapB3 vs WT","Exclude Wigle 2021 prospective",1.82370517558273,1.20450896976369,2.80714738057417

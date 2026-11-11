@@ -1,0 +1,13 @@
+"scenario","connected","treatments","designs","direct_comparisons","closed_loops","m","rank_A","q","q_from_rank","q_from_arm_rank"
+"primary",TRUE,"1|2|3|4|5",8,10,37,18,4,14,14,14
+"sensitivity_exclude_cevik",TRUE,"1|2|3|4|5",8,10,37,18,4,14,14,14
+"sensitivity_include_iachetta_kleibl",TRUE,"1|2|3|4|5",9,10,37,20,4,16,16,16
+"sensitivity_include_boisdron_overlap",TRUE,"1|2|3|4|5",8,10,37,18,4,14,14,14
+"sensitivity_exclude_onesti",TRUE,"1|2|3|4|5",8,10,37,18,4,14,14,14
+"sensitivity_exclude_genotype_informed_carriers",TRUE,"1|2|3|4|5",8,10,37,18,4,14,14,14
+"sensitivity_exclude_pk_informed_morel",TRUE,"1|2|3|4|5",8,10,37,18,4,14,14,14
+"sensitivity_exclude_all_treatment_moderated",TRUE,"1|2|3|4|5",8,10,37,18,4,14,14,14
+"sensitivity_wigle_early",TRUE,"1|2|3|4|5",8,10,37,18,4,14,14,14
+"sensitivity_cremolini_first_four",TRUE,"1|2|3|4|5",8,10,37,18,4,14,14,14
+"sensitivity_compound_lower_function",TRUE,"1|2|3|4|5",8,10,37,18,4,14,14,14
+"sensitivity_compound_reciprocal",TRUE,"1|2|3|4|5",8,10,37,18,4,14,14,14

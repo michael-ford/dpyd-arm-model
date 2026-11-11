@@ -1,0 +1,2 @@
+"scenario","status","n_chains","n_adapt","n_burnin","n_iter","n_thin","posterior_draws"
+"primary","complete","4","50000","125000","250000","10","1e+05"

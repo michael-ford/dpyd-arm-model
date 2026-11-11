@@ -1,96 +1,87 @@
-# DPYD Arm-Based Network Meta-Analysis
+# DPYD fixed-study network meta-analysis
 
-Bayesian arm-based network meta-analysis for DPYD variant toxicity using the R `pcnetmeta` package.
+This repository reproduces the final arm-level analysis of paper-defined severe fluoropyrimidine toxicity: 25 analytical strata, 79 mutually exclusive arms, 12,486 participants, and 3,821 events. The Bayesian binomial-logit model uses fixed study effects, independent deviations on every arm, common arm-level heterogeneity, and wild type (WT) as the global reference. Genotype effects use concurrent within-stratum information (White et al., 2019; Piepho et al., 2024).
 
-## Overview
+The primary odds ratios versus WT, from `results/tables/core/table_primary_five_node_or_95_cri.csv`, are:
 
-This analysis compares fluoropyrimidine toxicity risk across DPYD genetic variants using an arm-based NMA approach, which handles sparse data and zero-event arms more robustly than traditional contrast-based methods.
+| Variant | OR | 95% credible interval |
+|---|---:|---:|
+| HapB3 | 1.73 | 1.00–2.91 |
+| c.2846A>T | 7.30 | 3.55–16.14 |
+| *2A | 8.20 | 4.42–16.01 |
+| *13 | 2.81 | 0.80–10.08 |
 
-## Model
+The HapB3 lower bound before rounding is 1.000412; several sensitivity intervals include 1. Only relative odds ratios are reported: there are no clinical absolute-risk estimates or treatment rankings. The comparator-classification QBA is a screening calculation, not corrected patient data. The global inconsistency diagnostic converged but failed its information gate; inconsistency could not be assessed reliably.
 
-The WT Unified model pools all wild-type studies into a single reference node:
+## Layout
 
-| Treatment | Description |
-|-----------|-------------|
-| WT | Wild-type (reference) |
-| HapB3 | c.1236G>A / HapB3 variant |
-| c.2846A>T | c.2846A>T variant |
-| *2A | DPYD*2A variant |
-| *13 | DPYD*13 variant |
+- `R/fixed_study_model.R`, `R/model_fixed_study/`: model and JAGS definitions.
+- `R/design_by_treatment.R`, `R/network_geometry.R`: inconsistency diagnostic and network geometry.
+- `R/core_*`, `R/dependent_*`, `R/inconsistency_runner.R`: scenario preparation, checkpoints, and execution.
+- `R/arm_rows.R`, `R/scenario_helpers.R`, `R/checksums.R`, `R/common/data_utils.R`: shared row, integrity, and transformation helpers.
+- `R/build_core_tables.R`, `R/build_sensitivity_tables.R`, `R/render_core_figures.R`, `R/render_sensitivity_figures.R`: publication assets.
+- `R/run_scenario.R`, `R/compare_to_reference.R`, `R/rebuild_outputs.R`: public commands.
+- `R/generate_core_inputs.R`, `R/generate_dependent_inputs.R`: optional checkpoint generation for inspection under `runs/checkpoints/`.
+- `R/summarize_dependent.R`: internal checkpoint helpers; it expects checkpoint-local attempts and is not a public command for aggregating repository-level reruns.
+- `tests/`: focused validation and model tests.
+- `data/core/`, `data/dependent/`: exact scenario inputs; `data/reporting/`: published comparator classifications.
+- `data/input_checksums.csv`: SHA-256 manifest of public inputs, code, and reference assets.
+- `results/`: reference tables, figures, reports, diagnostics, scenario specifications, and both committed seed schedules under `results/analysis/`.
+- `runs/`: ignored reruns and rebuilt assets; existing attempts are preserved.
 
-## Quick Start
+## Reproduction
 
-```bash
-# Build and run analysis
-docker compose run --name dpyd-nma nma-analysis
+Run from the repository root with Docker installed:
 
-# Extract results from container
-docker cp dpyd-nma:/analysis/output ./output
+```sh
+docker build --build-arg GIT_COMMIT="$(git rev-parse HEAD)" -t dpyd-fixed-study .
 
-# Generate Excel workbook (optional, requires Python with openpyxl)
-python3 scripts/export_results_xlsx.py
+# Validate every runnable scenario without MCMC.
+docker run --rm -v "$PWD:/analysis" -w /analysis dpyd-fixed-study Rscript R/run_scenario.R --all --preflight
 
-# Clean up container when done
-docker rm dpyd-nma
+# Primary analysis.
+docker run --rm -v "$PWD:/analysis" -w /analysis dpyd-fixed-study Rscript R/run_scenario.R primary
+
+# All 12 core fits, 29 dependent fits, and two inconsistency diagnostics.
+# Use a separate output directory/clean checkout if the primary was already run;
+# or record a reason for another preserved attempt:
+docker run --rm -e RERUN_REASON="Full reproduction" -v "$PWD:/analysis" -w /analysis dpyd-fixed-study Rscript R/run_scenario.R --all
+
+# Rebuild tables and figures from the committed reference summaries.
+docker run --rm -v "$PWD:/analysis" -w /analysis dpyd-fixed-study Rscript R/rebuild_outputs.R
+
+# Compare the latest primary rerun with the committed reference.
+docker run --rm -v "$PWD:/analysis" -w /analysis dpyd-fixed-study Rscript R/compare_to_reference.R primary
+
+# Focused tests, each in a fresh R process.
+docker run --rm -v "$PWD:/analysis" -w /analysis dpyd-fixed-study sh -c 'for f in tests/test_*.R; do Rscript "$f" || exit 1; done'
 ```
 
-## What Runs
+`--list` lists runnable scenario names. Three grouped exclusions alias core fits; the N≤5 sparse scenario is explicitly infeasible because it removes *13. Outputs go to `runs/<scenario>/attempt_NNN/`; rebuilt assets go to `runs/rebuilt/`. A nonconverged fit stops without extension or fallback. An inconsistency information-gate failure is retained and reported as non-estimable.
 
-The `docker compose run` command executes `R/run_analysis.R`, which runs:
+Every production fit uses four chains, 50,000 adaptation iterations, 125,000 burn-in iterations, 250,000 sampling iterations per chain, and thinning 10 (100,000 retained draws). The master seed is 12345; scenario-specific chain seeds come from the committed schedules. Every reported effect, pairwise contrast, and heterogeneity parameter must have PSRF upper 95% ≤1.05 and ESS ≥1,000. Run metadata records input hashes, Git commit, R, JAGS, rjags, and coda versions.
 
-1. **WT Unified Model** (`R/model_wt_unified/run.R`) - Fits arm-based NMA with het_cor model
-2. **Rank Extraction** (`R/extract_ranks.R`) - Extracts rank probabilities and SUCRA
-3. **Heterogeneity Extraction** (`R/extract_heterogeneity.R`) - Extracts treatment-specific SDs and correlations
-4. **Pairwise Probability Analysis** (`R/pairwise_analysis.R`) - Calculates P(OR_A > OR_B) from MCMC samples
+The recorded dependent fits took about 3 minutes to 7.4 hours each; WT-split fits were the longest. Hardware and concurrent execution affect these times. No primary-specific timing was included in the reference package. Allow many hours for all scenarios.
 
-All outputs are written to `/analysis/output/` inside the container.
+| Runtime component | Version or build policy |
+|---|---|
+| R | 4.4.1 (`rocker/r-ver:4.4.1`) |
+| JAGS | 4.3.0; installed through APT and asserted at build time |
+| rjags | 4-17 (displayed by R as 4.17) |
+| coda | 0.19-4.1 (displayed by R as 0.19.4.1) |
+| dplyr | CRAN at image build; arm transformations |
+| ggplot2 | CRAN at image build; figures |
 
-## Output
+The build installs normal transitive dependencies. `remotes` is an installation helper and is removed afterward. Supporting-package and operating-system revisions were not recorded in the reference execution log and are not pinned here. Retain the verified Docker image for exact runtime reproduction; a future rebuild may resolve newer supporting packages and change plot appearance.
 
-Results are saved to `output/wt_unified/`:
+The comparison prints maximum absolute differences in OR/CrI, tau, and diagnostic extrema. Core references include OR/CrI and tau; dependent references contain selected HapB3 contrasts and diagnostic extrema, but no tau summaries. Per-parameter reference PSRF/ESS are unavailable, so comparisons use maximum PSRF upper 95% and minimum ESS. Each rerun still records and gates every monitored parameter. Inconsistency references contain gate results and diagnostic extrema, not full OR/tau summaries.
 
-### Model Results
-- `wt_unified_publication_summary.csv` - ORs and CrIs formatted for publication
-- `wt_unified_odds_ratios.csv` - All pairwise ORs
-- `wt_unified_absolute_risks.csv` - Toxicity probabilities per treatment
-- `wt_unified_model_summary.csv` - Model fit statistics (DIC, PSRF, etc.)
-- `wt_unified_mcmc_samples.rds` - Raw MCMC samples for custom analyses
+Reproduction status of this release: the primary analysis was rerun in the release image and reproduced the reference results exactly. The other 40 fits were not rerun for this release; their reference results are carried over unchanged, and their inputs, seeds and model settings were verified identical to those of the runs that produced them.
 
-### Rank Probabilities
-- `wt_unified_rank_probabilities.csv` - P(treatment = rank k) matrix
-- `wt_unified_sucra.csv` - Surface Under Cumulative Ranking curve values
+Table and figure rebuilding uses committed lightweight reference summaries; it does not reconstruct those summaries from posterior draws. Rebuilt assets include repository-relative input provenance ledgers and source eligibility. Optional checkpoint generation is for comparison and inspection; it does not replace the committed inputs or release metadata.
 
-### Heterogeneity Parameters (Table S7)
-- `wt_unified_heterogeneity_params.csv` - Treatment-specific SDs and correlations
-- `wt_unified_heterogeneity_summary.txt` - Formatted summary for manuscript
-- `wt_unified_heterogeneity_mcmc.rds` - MCMC samples for sensitivity analyses
+This replaces the earlier pcnetmeta analysis, which remains in Git history. The final model is described in the manuscript and `results/METHODS.md`, with numerical reports under `results/analysis/`.
 
-### Pairwise Probability Analysis
-- `pairwise_probability_results.csv` - P(OR_A > OR_B) for variant comparisons
-- `pairwise_probability_full.rds` - Full results including OR ratios and CrIs
+White et al. (2019): https://doi.org/10.1002/sim.8360
 
-### Combined Output
-- `dpyd_nma_results.xlsx` - All CSV results in a single Excel workbook (generated by `scripts/export_results_xlsx.py`)
-
-## Pairwise Probability Analysis
-
-When median OR estimates suggest unexpected ranking (e.g., a variant with higher Activity Score appearing more toxic), pairwise probability analysis determines whether this reflects a true difference or overlapping uncertainty.
-
-The analysis extracts MCMC posterior samples and calculates:
-1. **OR ratio** between two variants (e.g., OR_2846hetho / OR_13hetho)
-2. **95% Credible Interval** for the ratio
-3. **Pairwise probability** P(OR_A > OR_B) from direct sample comparison
-
-## Configuration
-
-MCMC settings (in `R/common/model_runner.R`):
-- Iterations: 150,000
-- Burn-in: 75,000
-- Thinning: 10
-- Chains: 3
-
-## Requirements
-
-- Docker
-- ~10 minutes runtime for full analysis
-- Python 3 with `openpyxl` (optional, for Excel export)
+Piepho et al. (2024): https://doi.org/10.1002/jrsm.1721

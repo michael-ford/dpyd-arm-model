@@ -1,0 +1,7 @@
+"path","sha256"
+"R/fixed_study_model.R","b22295eefb35381fb07d1d78b4cc3ca15f59bff5830439021c120b6b9513929c"
+"R/model_fixed_study/model.jags","cddb17e01d734e722d7a1a553a0f3179d1c6db9bb5aefc1dca16e051fc5db5b1"
+"R/model_fixed_study/design_by_treatment.jags","f7327ad3cf1ba1c31f8de66e0198396a62ac0589d7f18cbc913e507c4310f84e"
+"R/common/data_utils.R","7c030ab33ec09d1e77e7288cf7a7f7b99ac819a226bcd679a517e3243e0dba2c"
+"results/analysis/core/core_seed_schedule.csv","900599d4d0d360dc96e748b0ad484da630e1c0c6962249d58b7221e860ccc1a5"
+"results/analysis/dependent/fixed_study_seed_schedule.csv","aac3e28d3f53074044e1e0dbc73b9c65b3c81f03fa3188f67277ac8f80835f14"

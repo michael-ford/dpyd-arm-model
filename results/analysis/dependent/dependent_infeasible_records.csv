@@ -1,0 +1,2 @@
+"scenario","analysis_family","definition","infeasible_reason"
+"sparse_exclude_n5_missing_13","sparse","Exclude arms with N <= 5; *13 is absent and the fixed-study network is infeasible","The *13 treatment node is absent after N <= 5 filtering"

@@ -1,0 +1,8 @@
+source("R/run_scenario.R")
+publication_verify_inputs()
+core <- read.csv("results/analysis/core/core_seed_schedule.csv", stringsAsFactors = FALSE)
+dependent <- read.csv("results/analysis/dependent/fixed_study_seed_schedule.csv", stringsAsFactors = FALSE)
+stopifnot(identical(core, fixed_study_seed_schedule(unique(core$scenario_name), 12345L)))
+stopifnot(identical(dependent, fixed_study_seed_schedule(unique(dependent$scenario_name), 12345L)))
+publication_main(c("--all", "--preflight"))
+cat("All public scenarios passed preflight; both seed schedules reproduce master seed 12345.\n")

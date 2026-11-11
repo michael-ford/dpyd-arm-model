@@ -1,0 +1,29 @@
+model {
+  for (i in 1:Narm) {
+    r[i] ~ dbin(p[i], n[i])
+    logit(p[i]) <- b[study[i]] + d[treatment[i]] +
+      inprod(H[interaction_row[i], 1:Ninconsistency], gamma[1:Ninconsistency]) + u[i]
+    u[i] ~ dnorm(0, pow(tau_arm, -2))
+
+    r_rep[i] ~ dbin(p[i], n[i])
+  }
+
+  for (j in 1:Nstudy) {
+    b[j] ~ dnorm(0, 1.0E-4)
+  }
+
+  d[1] <- 0
+  for (k in 2:Ntrt) {
+    d[k] ~ dnorm(0, 0.25)
+  }
+
+  for (h in 1:Ninconsistency) {
+    gamma[h] ~ dnorm(0, pow(gamma_prior_sd, -2))
+  }
+  for (c in 1:Ncontrast) {
+    design_interaction[c] <- inprod(H[c + 1, 1:Ninconsistency], gamma[1:Ninconsistency])
+  }
+
+  tau_arm ~ dnorm(0, 1) T(0,)
+  tau_contrast <- sqrt(2) * tau_arm
+}

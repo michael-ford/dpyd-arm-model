@@ -1,0 +1,19 @@
+"contrast","treatment_2","treatment_3","treatment_4","treatment_5"
+"design_1:2 - 1",1,0,0,0
+"design_2:2 - 1",1,0,0,0
+"design_2:3 - 1",0,1,0,0
+"design_2:4 - 1",0,0,1,0
+"design_3:2 - 1",1,0,0,0
+"design_3:3 - 1",0,1,0,0
+"design_3:4 - 1",0,0,1,0
+"design_3:5 - 1",0,0,0,1
+"design_4:2 - 1",1,0,0,0
+"design_4:4 - 1",0,0,1,0
+"design_5:3 - 1",0,1,0,0
+"design_5:4 - 1",0,0,1,0
+"design_6:3 - 1",0,1,0,0
+"design_6:4 - 1",0,0,1,0
+"design_6:5 - 1",0,0,0,1
+"design_7:4 - 1",0,0,1,0
+"design_8:4 - 3",0,-1,1,0
+"design_8:5 - 3",0,-1,0,1

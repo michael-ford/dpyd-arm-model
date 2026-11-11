@@ -1,0 +1,33 @@
+"figure","scenario","scenario_label","treatment_id","treatment","reference","display_label","or_median","or_lower_95_cri","or_upper_95_cri","estimate_label","plot_order","node_x","node_y","direct_evidence_study_count","edge_treatment1","edge_treatment2","edge_n_studies","edge_studies"
+"primary_forest","primary",,1,"WT","WT","Wild-type",1,1,1,"Reference (OR 1.00)",1,,,,,,,
+"primary_forest","primary",,2,"HapB3","WT","HapB3",1.72650158394933,1.00041234292026,2.9104162655257,"1.73 (1.00 to 2.91)",2,,,,,,,
+"primary_forest","primary",,3,"2846hetho","WT","c.2846A>T",7.30218421572421,3.55094665208794,16.1401620957731,"7.30 (3.55 to 16.14)",3,,,,,,,
+"primary_forest","primary",,4,"2Ahetho","WT","*2A",8.20062570133946,4.4230939373985,16.008664318381,"8.20 (4.42 to 16.01)",4,,,,,,,
+"primary_forest","primary",,5,"13hetho","WT","*13",2.80909914119869,0.79712887000182,10.0773241977346,"2.81 (0.80 to 10.08)",5,,,,,,,
+"hapb3_sensitivity_forest","primary","Primary",2,"HapB3","WT","Primary",1.72650158394933,1.00041234292026,2.9104162655257,"1.73 (1.00 to 2.91)",1,,,,,,,
+"hapb3_sensitivity_forest","sensitivity_exclude_cevik","Exclude Cevik",2,"HapB3","WT","Exclude Cevik",1.64977202652474,0.939257796962504,2.80456890978729,"1.65 (0.94 to 2.80)",2,,,,,,,
+"hapb3_sensitivity_forest","sensitivity_include_iachetta_kleibl","Include Iachetta and Kleibl",2,"HapB3","WT","Include Iachetta and Kleibl",1.69031288543055,0.979170130796839,2.84678405421779,"1.69 (0.98 to 2.85)",3,,,,,,,
+"hapb3_sensitivity_forest","sensitivity_include_boisdron_overlap","Include Boisdron-Celle overlap",2,"HapB3","WT","Include Boisdron-Celle overlap",1.75067130315739,1.00791703856015,2.99055126140495,"1.75 (1.01 to 2.99)",4,,,,,,,
+"hapb3_sensitivity_forest","sensitivity_exclude_onesti","Exclude Onesti",2,"HapB3","WT","Exclude Onesti",1.71356003440022,0.994889541173251,2.90565798993494,"1.71 (0.99 to 2.91)",5,,,,,,,
+"hapb3_sensitivity_forest","sensitivity_exclude_genotype_informed_carriers","Exclude genotype-informed carriers",2,"HapB3","WT","Exclude genotype-informed carriers",2.03374594371089,1.35764175096086,3.18129940795024,"2.03 (1.36 to 3.18)",6,,,,,,,
+"hapb3_sensitivity_forest","sensitivity_exclude_pk_informed_morel","Exclude PK-informed Morel",2,"HapB3","WT","Exclude PK-informed Morel",1.68381375778404,0.981837581339156,2.82740990111916,"1.68 (0.98 to 2.83)",7,,,,,,,
+"hapb3_sensitivity_forest","sensitivity_exclude_all_treatment_moderated","Exclude all treatment-moderated",2,"HapB3","WT","Exclude all treatment-moderated",1.97207649374926,1.33958458967367,3.05758216428302,"1.97 (1.34 to 3.06)",8,,,,,,,
+"hapb3_sensitivity_forest","sensitivity_wigle_early","Wigle: early toxicity window",2,"HapB3","WT","Wigle: early toxicity window",1.66677718831942,0.938427021140217,2.86388557510685,"1.67 (0.94 to 2.86)",9,,,,,,,
+"hapb3_sensitivity_forest","sensitivity_cremolini_first_four","Cremolini: first four cycles",2,"HapB3","WT","Cremolini: first four cycles",1.7112221307819,0.991972043718772,2.91337334603319,"1.71 (0.99 to 2.91)",10,,,,,,,
+"hapb3_sensitivity_forest","sensitivity_compound_lower_function","Compound: lower-function allocation",2,"HapB3","WT","Compound: lower-function allocation",1.71986483776269,1.00380408213104,2.9091282564165,"1.72 (1.00 to 2.91)",11,,,,,,,
+"hapb3_sensitivity_forest","sensitivity_compound_reciprocal","Compound: reciprocal allocation",2,"HapB3","WT","Compound: reciprocal allocation",1.74328708394815,1.0067035896962,2.97229861683414,"1.74 (1.01 to 2.97)",12,,,,,,,
+"network_node","primary",,1,"WT","WT","Wild-type",,,,,1,6.12323399573677e-17,1,52,,,,
+"network_node","primary",,2,"HapB3","WT","HapB3",,,,,2,-0.951056516295154,0.309016994374948,38,,,,
+"network_node","primary",,3,"2846hetho","WT","c.2846A>T",,,,,3,-0.587785252292473,-0.809016994374947,40,,,,
+"network_node","primary",,4,"2Ahetho","WT","*2A",,,,,4,0.587785252292473,-0.809016994374948,48,,,,
+"network_node","primary",,5,"13hetho","WT","*13",,,,,5,0.951056516295154,0.309016994374947,32,,,,
+"network_edge","primary",,,,"WT","Wild-type vs HapB3",,,,,,,,,1,2,15,"Boige_2016_FFCD_2000_05|Boige_2016_PETACC_8|Bozina_2021|Cevik_2022|Etienne_Grimaldi_2017|Falvella_2015|Froehlich_2015|Ikonnikova_2024|Jennings_2013|Lee_2016|Loganayagam_2013|Ragia_2023|Rosmarin_2015_arm_A|Rosmarin_2015_arm_B|Wigle_2021_prospective"
+"network_edge","primary",,,,"WT","Wild-type vs c.2846A>T",,,,,,,,,1,3,11,"Boige_2016_FFCD_2000_05|Boige_2016_PETACC_8|Bozina_2021|Cremolini_2018|Etienne_Grimaldi_2017|Froehlich_2015|Jennings_2013|Loganayagam_2013|Morel_2006|Toffoli_2015|Wigle_2021_prospective"
+"network_edge","primary",,,,"WT","HapB3 vs c.2846A>T",,,,,,,,,2,3,8,"Boige_2016_FFCD_2000_05|Boige_2016_PETACC_8|Bozina_2021|Etienne_Grimaldi_2017|Froehlich_2015|Jennings_2013|Loganayagam_2013|Wigle_2021_prospective"
+"network_edge","primary",,,,"WT","Wild-type vs *2A",,,,,,,,,1,4,18,"Boige_2016_FFCD_2000_05|Boige_2016_PETACC_8|Botticelli_2017|Bozina_2021|Braun_2009|Cremolini_2018|Etienne_Grimaldi_2017|Froehlich_2015|Jennings_2013|Largillier_2006|Loganayagam_2013|Morel_2006|Onesti_2017|Ragia_2023|Salgueiro_2004|Schwab_2008|Toffoli_2015|Wigle_2021_prospective"
+"network_edge","primary",,,,"WT","c.2846A>T vs *2A",,,,,,,,,3,4,12,"Boige_2016_FFCD_2000_05|Boige_2016_PETACC_8|Bozina_2021|Cremolini_2018|Etienne_Grimaldi_2017|Froehlich_2015|Jennings_2013|Lee_N0147_RareVariants|Loganayagam_2013|Morel_2006|Toffoli_2015|Wigle_2021_prospective"
+"network_edge","primary",,,,"WT","HapB3 vs *2A",,,,,,,,,2,4,9,"Boige_2016_FFCD_2000_05|Boige_2016_PETACC_8|Bozina_2021|Etienne_Grimaldi_2017|Froehlich_2015|Jennings_2013|Loganayagam_2013|Ragia_2023|Wigle_2021_prospective"
+"network_edge","primary",,,,"WT","HapB3 vs *13",,,,,,,,,2,5,6,"Boige_2016_PETACC_8|Bozina_2021|Etienne_Grimaldi_2017|Froehlich_2015|Loganayagam_2013|Wigle_2021_prospective"
+"network_edge","primary",,,,"WT","Wild-type vs *13",,,,,,,,,1,5,8,"Boige_2016_PETACC_8|Bozina_2021|Etienne_Grimaldi_2017|Froehlich_2015|Loganayagam_2013|Morel_2006|Toffoli_2015|Wigle_2021_prospective"
+"network_edge","primary",,,,"WT","c.2846A>T vs *13",,,,,,,,,3,5,9,"Boige_2016_PETACC_8|Bozina_2021|Etienne_Grimaldi_2017|Froehlich_2015|Lee_N0147_RareVariants|Loganayagam_2013|Morel_2006|Toffoli_2015|Wigle_2021_prospective"
+"network_edge","primary",,,,"WT","*2A vs *13",,,,,,,,,4,5,9,"Boige_2016_PETACC_8|Bozina_2021|Etienne_Grimaldi_2017|Froehlich_2015|Lee_N0147_RareVariants|Loganayagam_2013|Morel_2006|Toffoli_2015|Wigle_2021_prospective"

@@ -1,0 +1,3 @@
+"parameter","median","lower_95_CrI","upper_95_CrI","interpretation"
+"Arm-level tau",0.58670859548368,0.354799531153401,0.922441377573913,"Common SD of independent arm-level deviations on the log-odds scale"
+"Contrast-level sqrt(2) x tau",0.82973125289389,0.501762308880755,1.30452910665915,"Implied SD of a contrast between two independent arm deviations"

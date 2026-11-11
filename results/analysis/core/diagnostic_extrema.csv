@@ -1,0 +1,13 @@
+"scenario","definition","attempt","max_psrf_upper_95","min_effective_size","max_residual_deviance","diagnostics_passed"
+"primary","Primary: fixed-study-effect eligible strata and mutually exclusive pure-variant arms",1,1.00131583317018,7474.37232633861,4.1089825968845,TRUE
+"sensitivity_exclude_cevik","Remove the complete approved Cevik HapB3 comparison",1,1.00494055165385,7908.49324323625,4.1288228573929,TRUE
+"sensitivity_include_iachetta_kleibl","Restore source-reconciled outcome-sampled Iachetta and Kleibl rows",1,1.00090644020916,7273.57914616116,4.18069526368858,TRUE
+"sensitivity_include_boisdron_overlap","Restore Boisdron-Celle as a pure-arm overlap sensitivity alongside Morel",1,1.00049166816654,8667.14691371136,4.05807287436164,TRUE
+"sensitivity_exclude_onesti","Remove the smaller probably overlapping Onesti stratum",1,1.00064581506293,7929.63168816772,4.03442009311039,TRUE
+"sensitivity_exclude_genotype_informed_carriers","Remove prospective guided Wigle and guideline-guided Bozina carrier arms only",1,1.00037101006181,4013.75422417408,5.433490202575,TRUE
+"sensitivity_exclude_pk_informed_morel","Remove the complete PK-informed Morel stratum; Boisdron-Celle is already absent",1,1.00246292482908,6467.28438933611,4.12227186072673,TRUE
+"sensitivity_exclude_all_treatment_moderated","Apply genotype-informed carrier-arm and PK-informed Morel exclusions together",1,1.00211524988033,3267.97112940777,5.30296561110328,TRUE
+"sensitivity_wigle_early","Use the source-supported early toxicity window for prospective Wigle only",1,1.00070470157273,6618.40165706749,4.02865155785252,TRUE
+"sensitivity_cremolini_first_four","Use the source-supported first-four-cycle toxicity window for Cremolini only",1,1.00082161439847,8062.1111089703,4.00152311884564,TRUE
+"sensitivity_compound_lower_function","Allocate each modeled compound once under the lower-function rule",1,1.00229904685051,7573.2848937218,4.41310511543776,TRUE
+"sensitivity_compound_reciprocal","Allocate each modeled compound once under the reciprocal rule",1,1.00154508843824,7828.7812360895,4.13001215319622,TRUE

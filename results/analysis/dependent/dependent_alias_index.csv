@@ -1,0 +1,4 @@
+"scenario","analysis_family","definition","attempt","attempt_path","status","execution_scenario"
+"loo_exclude_Cevik_2022","loo","Leave out source group Cevik_2022; completed core alias","NA","NA","alias","sensitivity_exclude_cevik"
+"loo_exclude_Morel_2006","loo","Leave out source group Morel_2006; completed core alias","NA","NA","alias","sensitivity_exclude_pk_informed_morel"
+"loo_exclude_Onesti_2017","loo","Leave out source group Onesti_2017; completed core alias","NA","NA","alias","sensitivity_exclude_onesti"

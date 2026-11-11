@@ -1,0 +1,2 @@
+"family","scenario","definition","comparison","studies","arms","participants","events","OR","lower_95_CrI","upper_95_CrI","max_PSRF_upper_95","min_ESS","execution_status","execution_source"
+"sparse","sparse_exclude_n2","Exclude arms with N <= 2 and then drop WT-only strata","HapB3 vs WT",22,63,12193,3763,1.70981391317515,1.02722978331838,2.82318710417696,1.00041881593198,9399.31563099827,"complete","sparse_exclude_n2"
