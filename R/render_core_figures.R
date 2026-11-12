@@ -205,7 +205,7 @@ core_network_plot <- function(nodes, edges) {
     ) +
     ggplot2::scale_colour_manual(values = core_treatment_colors, guide = "none") +
     ggplot2::scale_size_continuous(range = c(7, 13), guide = "none") +
-    ggplot2::scale_linewidth_continuous(range = c(0.45, 1.75), name = "Contributing studies") +
+    ggplot2::scale_linewidth_continuous(range = c(0.45, 1.75), name = "Contributing strata") +
     ggplot2::coord_equal(xlim = c(-1.55, 1.55), ylim = c(-1.45, 1.45), clip = "off") +
     ggplot2::labs(
       title = "Observed study-co-occurrence network",
